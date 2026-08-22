@@ -1,0 +1,9 @@
+**/target/
+**/.git
+**/.idea
+**/.DS_Store
+**/*.iml
+**/*.log
+**/node_modules
+.env
+docker-compose.override.yml
