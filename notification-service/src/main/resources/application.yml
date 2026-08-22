@@ -5,6 +5,11 @@ spring:
 server:
   port: 8082
 
+# JWT Configuration (apenas validação)
+app:
+  jwt:
+    secret: ${JWT_SECRET:dGVjaC1jaGFsbGVuZ2UtZmFzZTMtand0LXNlY3JldC1rZXktMjAyNi1maWFwLXByb2plY3Q=}
+
 ---
 spring:
   config:

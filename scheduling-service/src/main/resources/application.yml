@@ -5,6 +5,12 @@ spring:
 server:
   port: 8081
 
+# JWT Configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET:dGVjaC1jaGFsbGVuZ2UtZmFzZTMtand0LXNlY3JldC1rZXktMjAyNi1maWFwLXByb2plY3Q=}
+    expiration-ms: ${JWT_EXPIRATION:86400000}
+
 ---
 spring:
   config:
