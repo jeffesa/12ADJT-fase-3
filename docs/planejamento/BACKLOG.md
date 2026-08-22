@@ -176,6 +176,31 @@ Implementar GlobalExceptionHandler com ProblemDetail (RFC 7807) em cada módulo,
 
 ---
 
+### [TASK-042: Configurar CI/CD básico (build + test + branch naming)](#task-042)
+
+**Labels:** `priority: high`, `épico: setup`, `pontos: 3`, `type: infra`  
+**Milestone:** Sprint 1 - Fundação
+
+## 📋 Descrição
+Configurar GitHub Actions com pipeline básico de build e testes desde o início do projeto. Reutilizar os workflows da Fase 2 adaptados para multi-module Maven. O refinamento com SonarCloud e badges fica na TASK-032 (Sprint 6).
+
+## ✅ Critérios de Aceitação
+- [ ] Workflow `ci-cd.yml`: build + test em push/PR para develop e main
+  - [ ] Maven build multi-module (`mvn -B clean verify`)
+  - [ ] Cache de Maven configurado
+  - [ ] Java 17 (temurin)
+- [ ] Workflow `branch-naming.yml`: validação de nomes de branch em PRs
+  - [ ] Prefixos permitidos: feature/, bugfix/, hotfix/, release/, chore/, docs/, test/, refactor/, perf/, ci/, style/
+- [ ] Workflow `auto-pr-to-main.yml`: cria PR automático develop → main
+  - [ ] Auto-merge habilitado
+- [ ] Build falha se testes falharem
+- [ ] Pipelines validados com push de teste
+
+## 🔧 Dependências Técnicas
+- [TASK-001](#task-001) concluída (projeto compila)
+
+---
+
 ## 📋 ÉPICO 2: Serviço de Agendamento (scheduling-service)
 
 ### [TASK-008: Criar entidade de domínio User e gateway](#task-008)
@@ -971,18 +996,18 @@ Além de notificar na criação/edição, implementar um scheduler que envia lem
 
 ## 📊 RESUMO DO BACKLOG
 
-**Total de Tasks:** 41  
-**Obrigatórias:** 40 | **Não obrigatórias:** 1  
-**Estimativa Total:** ~135 pontos
+**Total de Tasks:** 42  
+**Obrigatórias:** 41 | **Não obrigatórias:** 1  
+**Estimativa Total:** ~138 pontos
 
 ### Por Prioridade:
-- **Alta:** 40 tasks (obrigatórias)
+- **Alta:** 41 tasks (obrigatórias)
 - **Média:** 1 task (deploy)
 
 ### Por Épico:
 | Épico | Tasks | Pontos |
 |-------|-------|--------|
-| 1. Setup e Infraestrutura | 7 | 28 |
+| 1. Setup e Infraestrutura | 8 | 31 |
 | 2. Scheduling Service | 8 | 34 |
 | 3. Notification Service | 5 | 15 |
 | 4. History Service (GraphQL) | 6 | 22 |
@@ -997,7 +1022,7 @@ Além de notificar na criação/edição, implementar um scheduler que envia lem
 
 | Sprint | Descrição | Tasks |
 |--------|-----------|-------|
-| Sprint 1 | Fundação (infra + setup) | [001](#task-001) → [007](#task-007) |
+| Sprint 1 | Fundação (infra + setup) | [001](#task-001) → [007](#task-007), [042](#task-042) |
 | Sprint 2 | Scheduling Service (core) | [008](#task-008) → [015](#task-015) |
 | Sprint 3 | Notification Service | [016](#task-016) → [019](#task-019) |
 | Sprint 4 | History Service (GraphQL) | [020](#task-020) → [025](#task-025) |

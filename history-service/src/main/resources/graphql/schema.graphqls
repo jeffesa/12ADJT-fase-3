@@ -1,0 +1,20 @@
+type Query {
+    appointmentsByPatient(patientId: ID!): [AppointmentHistory]
+    appointmentsByDoctor(doctorId: ID!): [AppointmentHistory]
+    upcomingAppointments(patientId: ID!): [AppointmentHistory]
+    appointmentHistory(id: ID!): AppointmentHistory
+}
+
+type AppointmentHistory {
+    id: ID!
+    appointmentId: ID!
+    patientId: ID!
+    doctorId: ID!
+    patientName: String
+    doctorName: String
+    dateTime: String
+    status: String
+    description: String
+    eventType: String
+    receivedAt: String
+}
