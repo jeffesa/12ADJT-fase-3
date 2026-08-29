@@ -2,12 +2,14 @@ package com.fiap.scheduling.infra.web;
 
 import com.fiap.scheduling.application.usecase.CancelAppointmentUseCase;
 import com.fiap.scheduling.application.usecase.CreateAppointmentUseCase;
+import com.fiap.scheduling.application.usecase.FindAllAppointmentsUseCase;
 import com.fiap.scheduling.application.usecase.FindAppointmentByIdUseCase;
 import com.fiap.scheduling.application.usecase.FindAppointmentsByDoctorUseCase;
 import com.fiap.scheduling.application.usecase.FindAppointmentsByPatientUseCase;
 import com.fiap.scheduling.application.usecase.FindUpcomingAppointmentsUseCase;
 import com.fiap.scheduling.application.usecase.UpdateAppointmentUseCase;
 import com.fiap.scheduling.domain.entity.Appointment;
+import com.fiap.scheduling.domain.entity.AppointmentStatus;
 import com.fiap.scheduling.domain.entity.UserRole;
 import com.fiap.scheduling.infra.security.AuthenticatedUser;
 import com.fiap.scheduling.infra.web.dto.AppointmentResponse;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -50,6 +53,7 @@ public class AppointmentController {
     private final FindAppointmentsByPatientUseCase findAppointmentsByPatientUseCase;
     private final FindAppointmentsByDoctorUseCase findAppointmentsByDoctorUseCase;
     private final FindUpcomingAppointmentsUseCase findUpcomingAppointmentsUseCase;
+    private final FindAllAppointmentsUseCase findAllAppointmentsUseCase;
 
     public AppointmentController(CreateAppointmentUseCase createAppointmentUseCase,
                                  UpdateAppointmentUseCase updateAppointmentUseCase,
@@ -57,7 +61,8 @@ public class AppointmentController {
                                  FindAppointmentByIdUseCase findAppointmentByIdUseCase,
                                  FindAppointmentsByPatientUseCase findAppointmentsByPatientUseCase,
                                  FindAppointmentsByDoctorUseCase findAppointmentsByDoctorUseCase,
-                                 FindUpcomingAppointmentsUseCase findUpcomingAppointmentsUseCase) {
+                                 FindUpcomingAppointmentsUseCase findUpcomingAppointmentsUseCase,
+                                 FindAllAppointmentsUseCase findAllAppointmentsUseCase) {
         this.createAppointmentUseCase = createAppointmentUseCase;
         this.updateAppointmentUseCase = updateAppointmentUseCase;
         this.cancelAppointmentUseCase = cancelAppointmentUseCase;
@@ -65,6 +70,7 @@ public class AppointmentController {
         this.findAppointmentsByPatientUseCase = findAppointmentsByPatientUseCase;
         this.findAppointmentsByDoctorUseCase = findAppointmentsByDoctorUseCase;
         this.findUpcomingAppointmentsUseCase = findUpcomingAppointmentsUseCase;
+        this.findAllAppointmentsUseCase = findAllAppointmentsUseCase;
     }
 
     @Operation(summary = "Criar consulta", description = "Cria uma nova consulta. Apenas DOCTOR e NURSE.")
@@ -183,6 +189,21 @@ public class AppointmentController {
         return ResponseEntity.ok(toResponseList(appointments));
     }
 
+    @Operation(summary = "Listar todas as consultas",
+            description = "Lista todas as consultas. Filtro opcional por status (SCHEDULED, CONFIRMED, CANCELLED, COMPLETED). Apenas DOCTOR e NURSE.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de consultas"),
+            @ApiResponse(responseCode = "400", description = "Status inválido"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão")
+    })
+    @GetMapping
+    public ResponseEntity<List<AppointmentResponse>> findAll(
+            @RequestParam(name = "status", required = false) String status) {
+        AppointmentStatus statusFilter = parseStatusFilter(status);
+        List<Appointment> appointments = findAllAppointmentsUseCase.execute(statusFilter);
+        return ResponseEntity.ok(toResponseList(appointments));
+    }
+
     @Operation(summary = "Listar consultas futuras",
             description = "Consultas futuras filtradas por role do usuário autenticado.")
     @ApiResponses({
@@ -209,6 +230,18 @@ public class AppointmentController {
 
     private UserRole toUserRole(String role) {
         return UserRole.valueOf(role);
+    }
+
+    private AppointmentStatus parseStatusFilter(String status) {
+        if (status == null || status.isBlank()) {
+            return null;
+        }
+        try {
+            return AppointmentStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "Status inválido: " + status + ". Valores aceitos: SCHEDULED, CONFIRMED, CANCELLED, COMPLETED");
+        }
     }
 
     private List<AppointmentResponse> toResponseList(List<Appointment> appointments) {

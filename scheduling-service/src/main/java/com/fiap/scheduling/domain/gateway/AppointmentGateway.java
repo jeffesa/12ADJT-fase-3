@@ -21,6 +21,8 @@ public interface AppointmentGateway {
 
     Optional<Appointment> findById(UUID id);
 
+    List<Appointment> findAll();
+
     List<Appointment> findByPatientId(UUID patientId);
 
     List<Appointment> findByDoctorId(UUID doctorId);
