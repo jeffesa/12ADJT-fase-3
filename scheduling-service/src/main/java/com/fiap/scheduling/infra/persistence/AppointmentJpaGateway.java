@@ -43,6 +43,13 @@ public class AppointmentJpaGateway implements AppointmentGateway {
     }
 
     @Override
+    public List<Appointment> findAll() {
+        return appointmentRepository.findAll().stream()
+                .map(AppointmentJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public List<Appointment> findByPatientId(UUID patientId) {
         return appointmentRepository.findByPatient_Id(patientId).stream()
                 .map(AppointmentJpaEntity::toDomain)
