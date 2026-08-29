@@ -2,10 +2,12 @@ package com.fiap.scheduling.infra.config;
 
 import com.fiap.scheduling.application.usecase.CancelAppointmentUseCase;
 import com.fiap.scheduling.application.usecase.CreateAppointmentUseCase;
+import com.fiap.scheduling.application.usecase.FindAllUsersUseCase;
 import com.fiap.scheduling.application.usecase.FindAppointmentByIdUseCase;
 import com.fiap.scheduling.application.usecase.FindAppointmentsByDoctorUseCase;
 import com.fiap.scheduling.application.usecase.FindAppointmentsByPatientUseCase;
 import com.fiap.scheduling.application.usecase.FindUpcomingAppointmentsUseCase;
+import com.fiap.scheduling.application.usecase.FindUserByIdUseCase;
 import com.fiap.scheduling.application.usecase.LoginUseCase;
 import com.fiap.scheduling.application.usecase.RegisterUserUseCase;
 import com.fiap.scheduling.application.usecase.UpdateAppointmentUseCase;
@@ -35,6 +37,16 @@ public class UseCaseConfig {
     @Bean
     public LoginUseCase loginUseCase(UserGateway userGateway, PasswordHasher passwordHasher, TokenProvider tokenProvider) {
         return new LoginUseCase(userGateway, passwordHasher, tokenProvider);
+    }
+
+    @Bean
+    public FindAllUsersUseCase findAllUsersUseCase(UserGateway userGateway) {
+        return new FindAllUsersUseCase(userGateway);
+    }
+
+    @Bean
+    public FindUserByIdUseCase findUserByIdUseCase(UserGateway userGateway) {
+        return new FindUserByIdUseCase(userGateway);
     }
 
     /**
