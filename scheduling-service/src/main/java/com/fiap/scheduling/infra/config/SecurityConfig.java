@@ -53,6 +53,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/appointments/doctor/*").hasAnyRole("DOCTOR", "NURSE")
                         // Appointments - demais consultas: autenticado (ownership no use case)
                         .requestMatchers(HttpMethod.GET, "/api/v1/appointments/**").authenticated()
+                        // Users - listar todos: DOCTOR e NURSE
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users").hasAnyRole("DOCTOR", "NURSE")
+                        // Users - buscar por id: autenticado (ownership do PATIENT no use case)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/*").authenticated()
                         // Qualquer outra request: autenticada
                         .anyRequest().authenticated()
                 )
