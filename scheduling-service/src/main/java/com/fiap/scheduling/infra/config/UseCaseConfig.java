@@ -15,7 +15,6 @@ import com.fiap.scheduling.domain.gateway.UserGateway;
 import com.fiap.scheduling.domain.shared.PasswordHasher;
 import com.fiap.scheduling.domain.shared.TokenProvider;
 import com.fiap.scheduling.infra.messaging.RabbitEventPublisher;
-import com.fiap.scheduling.infra.persistence.InMemoryAppointmentGateway;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,12 +36,6 @@ public class UseCaseConfig {
     @Bean
     public LoginUseCase loginUseCase(UserGateway userGateway, PasswordHasher passwordHasher, TokenProvider tokenProvider) {
         return new LoginUseCase(userGateway, passwordHasher, tokenProvider);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(AppointmentGateway.class)
-    public AppointmentGateway appointmentGateway() {
-        return new InMemoryAppointmentGateway();
     }
 
     @Bean
