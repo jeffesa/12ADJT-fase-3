@@ -1018,13 +1018,73 @@ Além de notificar na criação/edição, implementar um scheduler que envia lem
 
 ---
 
+## 📋 ÉPICO 8: Completude de CRUD (listagem)
+
+> Tasks adicionais criadas durante o desenvolvimento para completar a testabilidade
+> do sistema. O backlog original focou no diferencial técnico (microsserviços, RabbitMQ,
+> JWT, GraphQL) e deixou as listagens de User e Appointment incompletas. Editar/deletar/
+> cancelar foram deliberadamente descartados deste escopo (avaliar apenas ao final, se houver tempo).
+
+### TASK-044: Listar usuários (scheduling-service)
+
+**Labels:** `priority: high`, `épico: scheduling`, `pontos: 3`, `type: feature`
+**Milestone:** Sprint 2 - Scheduling Core
+
+## ✅ Critérios de Aceitação
+- [ ] GET `/api/v1/users` — lista todos (DOCTOR, NURSE)
+- [ ] Filtro opcional por role: `?role=PATIENT`
+- [ ] GET `/api/v1/users/{id}` — busca por ID (PATIENT só o próprio perfil)
+- [ ] UserResponse sem expor senha
+- [ ] Use cases: FindAllUsersUseCase, FindUserByIdUseCase
+- [ ] Swagger + proteção por role
+
+## 🔧 Dependências Técnicas
+- TASK-013 concluída
+- TASK-012 concluída
+
+---
+
+### TASK-045: Listar todas as consultas (scheduling-service)
+
+**Labels:** `priority: medium`, `épico: scheduling`, `pontos: 2`, `type: feature`
+**Milestone:** Sprint 2 - Scheduling Core
+
+## ✅ Critérios de Aceitação
+- [ ] GET `/api/v1/appointments` — lista todas (DOCTOR, NURSE)
+- [ ] Filtro opcional por status: `?status=SCHEDULED`
+- [ ] Use case: FindAllAppointmentsUseCase
+- [ ] Swagger + proteção por role
+
+## 🔧 Dependências Técnicas
+- TASK-013 concluída
+- TASK-011 concluída
+
+---
+
+### TASK-046: Listar notificações (notification-service)
+
+**Labels:** `priority: medium`, `épico: notification`, `pontos: 3`, `type: feature`
+**Milestone:** Sprint 3 - Notification
+
+## ✅ Critérios de Aceitação
+- [ ] TASK-017 deve **persistir** as notificações (não só logar)
+- [ ] GET `/api/v1/notifications` — lista as notificações enviadas
+- [ ] Filtro opcional por tipo: `?type=APPOINTMENT_CREATED`
+- [ ] Use case: FindAllNotificationsUseCase
+- [ ] Proteção JWT
+
+## 🔧 Dependências Técnicas
+- TASK-017 concluída (configurada para PERSISTIR notificações)
+
+---
+
 ## 🎯 ORDEM SUGERIDA DE EXECUÇÃO
 
 | Sprint | Descrição | Tasks |
 |--------|-----------|-------|
 | Sprint 1 | Fundação (infra + setup) | [001](#task-001) → [007](#task-007), [042](#task-042) |
-| Sprint 2 | Scheduling Service (core) | [008](#task-008) → [015](#task-015) |
-| Sprint 3 | Notification Service | [016](#task-016) → [019](#task-019) |
+| Sprint 2 | Scheduling Service (core) | [008](#task-008) → [015](#task-015), 044, 045 |
+| Sprint 3 | Notification Service | [016](#task-016) → [019](#task-019), 046 |
 | Sprint 4 | History Service (GraphQL) | [020](#task-020) → [025](#task-025) |
 | Sprint 5 | Integração + Segurança | [026](#task-026) → [030](#task-030) |
 | Sprint 6 | Finalização | [031](#task-031) → [041](#task-041) |
