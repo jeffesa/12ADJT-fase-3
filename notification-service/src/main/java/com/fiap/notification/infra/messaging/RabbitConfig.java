@@ -9,9 +9,9 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -19,9 +19,10 @@ import org.springframework.retry.support.RetryTemplate;
 /**
  * Configuração do RabbitMQ para o notification-service (consumer).
  * Define exchange, queues, bindings, DLQ e política de retry.
+ * Desabilitado no profile 'test' (RabbitAutoConfiguration é excluída lá).
  */
 @Configuration
-@ConditionalOnBean(ConnectionFactory.class)
+@Profile("!test")
 public class RabbitConfig {
 
     // Exchange
