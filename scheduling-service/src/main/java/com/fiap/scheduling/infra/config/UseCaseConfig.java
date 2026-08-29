@@ -16,10 +16,9 @@ import com.fiap.scheduling.domain.shared.PasswordHasher;
 import com.fiap.scheduling.domain.shared.TokenProvider;
 import com.fiap.scheduling.infra.messaging.RabbitEventPublisher;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 /**
  * Configuração de beans para use cases.
@@ -38,15 +37,21 @@ public class UseCaseConfig {
         return new LoginUseCase(userGateway, passwordHasher, tokenProvider);
     }
 
+    /**
+     * Publisher real (RabbitMQ) — ativo em dev/prod.
+     */
     @Bean
-    @ConditionalOnBean(RabbitTemplate.class)
+    @Profile("!test")
     public EventPublisher rabbitEventPublisher(RabbitTemplate rabbitTemplate) {
         return new RabbitEventPublisher(rabbitTemplate);
     }
 
+    /**
+     * Publisher no-op — ativo apenas no profile test (sem RabbitMQ).
+     */
     @Bean
-    @ConditionalOnMissingBean(EventPublisher.class)
-    public EventPublisher eventPublisher() {
+    @Profile("test")
+    public EventPublisher noOpEventPublisher() {
         return event -> {
         };
     }
