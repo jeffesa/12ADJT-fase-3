@@ -1,5 +1,6 @@
 package com.fiap.notification.infra.messaging;
 
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -12,9 +13,6 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 
 /**
  * Configuração do RabbitMQ para o notification-service (consumer).
@@ -36,11 +34,10 @@ public class RabbitConfig {
     public static final String ROUTING_KEY_CREATED = "appointment.created";
     public static final String ROUTING_KEY_UPDATED = "appointment.updated";
 
-    // Retry config
-    private static final int MAX_RETRY_ATTEMPTS = 3;
-    private static final long INITIAL_INTERVAL_MS = 1000;
-    private static final double MULTIPLIER = 2.0;
-    private static final long MAX_INTERVAL_MS = 10000;
+    // Concurrency
+    private static final int CONCURRENT_CONSUMERS = 2;
+    private static final int MAX_CONCURRENT_CONSUMERS = 5;
+    private static final int PREFETCH_COUNT = 10;
 
     // DLQ TTL (24 horas em milissegundos)
     private static final int DLQ_TTL = 86_400_000;
@@ -101,46 +98,31 @@ public class RabbitConfig {
     }
 
     // ═══════════════════════════════════════
-    // RETRY POLICY + LISTENER CONTAINER
+    // LISTENER CONTAINER (concurrency + ack manual)
     // ═══════════════════════════════════════
-
-    @Bean
-    public RetryTemplate retryTemplate() {
-        RetryTemplate retryTemplate = new RetryTemplate();
-
-        // Exponential backoff: 1s → 2s → 4s
-        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setInitialInterval(INITIAL_INTERVAL_MS);
-        backOffPolicy.setMultiplier(MULTIPLIER);
-        backOffPolicy.setMaxInterval(MAX_INTERVAL_MS);
-        retryTemplate.setBackOffPolicy(backOffPolicy);
-
-        // Max 3 tentativas
-        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-        retryPolicy.setMaxAttempts(MAX_RETRY_ATTEMPTS);
-        retryTemplate.setRetryPolicy(retryPolicy);
-
-        return retryTemplate;
-    }
 
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory connectionFactory,
             MessageConverter jackson2JsonMessageConverter,
-            RetryTemplate retryTemplate) {
+            @org.springframework.beans.factory.annotation.Value(
+                    "${spring.rabbitmq.listener.simple.auto-startup:true}") boolean autoStartup) {
 
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(jackson2JsonMessageConverter);
-        factory.setConcurrentConsumers(2);
-        factory.setMaxConcurrentConsumers(5);
-        factory.setPrefetchCount(10);
 
-        // Configura retry com envio para DLQ após esgotadas as tentativas
-        factory.setRetryTemplate(retryTemplate);
+        // Concurrency: consumers simultâneos
+        factory.setConcurrentConsumers(CONCURRENT_CONSUMERS);
+        factory.setMaxConcurrentConsumers(MAX_CONCURRENT_CONSUMERS);
+        factory.setPrefetchCount(PREFETCH_COUNT);
 
-        // Mensagens rejeitadas vão para DLQ (não requeue)
-        factory.setDefaultRequeueRejected(false);
+        // Acknowledgment MANUAL: o listener faz basicAck/basicNack explicitamente.
+        // (Política de retry com backoff será tratada na TASK-018.)
+        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+
+        // Respeita a config de auto-startup (permite desligar em testes de wiring)
+        factory.setAutoStartup(autoStartup);
 
         return factory;
     }
