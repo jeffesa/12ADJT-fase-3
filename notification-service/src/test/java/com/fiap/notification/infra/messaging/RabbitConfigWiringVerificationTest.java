@@ -17,7 +17,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @ActiveProfiles("dev")
-@TestPropertySource(properties = "spring.rabbitmq.host=localhost")
+@TestPropertySource(properties = {
+        "spring.rabbitmq.host=localhost",
+        // não iniciar os listeners: o teste só verifica a presença dos beans de config
+        "spring.rabbitmq.listener.simple.auto-startup=false"
+})
 class RabbitConfigWiringVerificationTest {
 
     @Autowired
