@@ -15,6 +15,18 @@ spring:
   config:
     activate:
       on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:notification_dev
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: true
   rabbitmq:
     host: localhost
     port: 5672
@@ -26,6 +38,14 @@ spring:
   config:
     activate:
       on-profile: test
+  datasource:
+    url: jdbc:h2:mem:notification_test
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
@@ -35,6 +55,15 @@ spring:
   config:
     activate:
       on-profile: prod
+  datasource:
+    url: jdbc:h2:mem:notification_prod
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
   rabbitmq:
     host: ${RABBITMQ_HOST:rabbitmq}
     port: ${RABBITMQ_PORT:5672}
