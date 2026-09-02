@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import java.nio.charset.StandardCharsets;
  */
 @Component
 @Profile("!test")
+@ConditionalOnProperty(name = "app.notification.dlq.monitor.enabled", havingValue = "true", matchIfMissing = true)
 public class DlqMonitorListener {
 
     private static final Logger log = LoggerFactory.getLogger(DlqMonitorListener.class);

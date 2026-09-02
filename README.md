@@ -218,6 +218,53 @@ Os serviços de notificação e histórico consomem esses eventos por meio de fi
 
 Inspeção via RabbitMQ Management UI: http://localhost:15672 (guest / guest).
 
+### Como testar a DLQ (fluxo de falha)
+
+Para demonstrar o retry + Dead Letter Queue de ponta a ponta, o notification-service
+tem um gatilho de teste: se uma consulta for criada com `description` igual a
+`FORCE_ERROR`, o processamento da notificação falha de propósito, exercitando os
+3 retries e o envio para a DLQ.
+
+**Passo a passo:**
+
+1. Suba o ambiente: `./run.sh docker` (ou `docker-compose up --build`).
+2. Registre um usuário e faça login para obter o token (endpoints de auth).
+3. Crie uma consulta com a descrição `FORCE_ERROR`:
+
+```bash
+curl -X POST http://localhost:8081/api/v1/appointments \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN_DOCTOR>" \
+  -d '{"patientId":"<PAT_ID>","doctorId":"<DOC_ID>","dateTime":"2099-12-01T14:30:00","description":"FORCE_ERROR"}'
+```
+
+4. Observe o log do notification-service (`docker logs fase3-notification-service`):
+
+```
+RetryExecutor  : Tentativa 1/3 falhou: Falha simulada (FORCE_ERROR) ...
+RetryExecutor  : Tentativa 2/3 falhou: ...
+RetryExecutor  : Tentativa 3/3 falhou: ...
+RetryExecutor  : Todas as 3 tentativas falharam.
+AppointmentNotificationListener : ... enviando para a DLQ.
+DlqMonitorListener : [DLQ] Mensagem na appointment.notification.dlq: headers={x-death=...} | payload={...}
+```
+
+Os intervalos entre as tentativas seguem backoff exponencial (~1s, ~2s).
+
+**Ver a mensagem parada na fila DLQ (RabbitMQ Management UI):**
+
+Por padrão, o `DlqMonitorListener` consome a DLQ para logar as mensagens — então
+a fila esvazia logo após o log. Para inspecionar a mensagem **parada** na
+`appointment.notification.dlq` pela UI (http://localhost:15672, guest/guest, aba
+**Queues**), desative o monitor ao subir:
+
+```bash
+NOTIFICATION_DLQ_MONITOR_ENABLED=false docker-compose up --build
+```
+
+(ou defina `app.notification.dlq.monitor.enabled=false`). Assim a mensagem
+permanece visível na DLQ para inspeção manual e eventual reprocessamento.
+
 ---
 
 ## Como rodar os testes
