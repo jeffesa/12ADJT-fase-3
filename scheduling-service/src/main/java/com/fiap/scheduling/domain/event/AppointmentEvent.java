@@ -12,6 +12,7 @@ public record AppointmentEvent(
         UUID doctorId,
         LocalDateTime dateTime,
         AppointmentStatus status,
+        String description,
         AppointmentEventType eventType
 ) {
 
@@ -22,6 +23,7 @@ public record AppointmentEvent(
                 appointment.getDoctorId(),
                 appointment.getDateTime(),
                 appointment.getStatus(),
+                appointment.getDescription(),
                 AppointmentEventType.CREATED
         );
     }
@@ -33,6 +35,7 @@ public record AppointmentEvent(
                 appointment.getDoctorId(),
                 appointment.getDateTime(),
                 appointment.getStatus(),
+                appointment.getDescription(),
                 AppointmentEventType.UPDATED
         );
     }

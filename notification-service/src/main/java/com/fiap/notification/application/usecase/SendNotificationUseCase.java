@@ -24,8 +24,21 @@ public class SendNotificationUseCase implements ProcessAppointmentEventUseCase {
         this.notificationGateway = notificationGateway;
     }
 
+    /**
+     * Gatilho para DEMONSTRAÇÃO/TESTE da DLQ: quando a descrição da consulta é
+     * exatamente "FORCE_ERROR", o processamento falha de propósito. Isso permite
+     * simular uma falha real de processamento (via API REST do scheduling),
+     * exercitando o retry (3 tentativas) e o envio para a DLQ.
+     */
+    public static final String FORCE_ERROR_TRIGGER = "FORCE_ERROR";
+
     @Override
     public void process(AppointmentEvent event) {
+        if (FORCE_ERROR_TRIGGER.equals(event.description())) {
+            throw new IllegalStateException(
+                    "Falha simulada (FORCE_ERROR) para teste de DLQ - appointmentId=" + event.appointmentId());
+        }
+
         NotificationType type = mapType(event.eventType());
         String subject = buildSubject(type);
         String body = buildBody(event, type);
