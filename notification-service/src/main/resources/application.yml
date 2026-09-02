@@ -15,6 +15,9 @@ app:
       max-attempts: ${NOTIFICATION_RETRY_MAX_ATTEMPTS:3}
       initial-interval-ms: ${NOTIFICATION_RETRY_INITIAL_MS:1000}
       multiplier: ${NOTIFICATION_RETRY_MULTIPLIER:2.0}
+    dlq:
+      monitor:
+        enabled: ${NOTIFICATION_DLQ_MONITOR_ENABLED:true}
 
 ---
 spring:

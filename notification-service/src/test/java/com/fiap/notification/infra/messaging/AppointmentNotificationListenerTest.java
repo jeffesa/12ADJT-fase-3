@@ -41,7 +41,7 @@ class AppointmentNotificationListenerTest {
 
     private AppointmentEvent event() {
         return new AppointmentEvent(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                LocalDateTime.now().plusDays(1), "SCHEDULED", AppointmentEventType.CREATED);
+                LocalDateTime.now().plusDays(1), "SCHEDULED", "Consulta", AppointmentEventType.CREATED);
     }
 
     @Test

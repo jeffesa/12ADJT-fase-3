@@ -38,7 +38,7 @@ class SendNotificationUseCaseTest {
 
     private AppointmentEvent event(AppointmentEventType type) {
         return new AppointmentEvent(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                LocalDateTime.of(2099, 12, 1, 14, 30), "SCHEDULED", type);
+                LocalDateTime.of(2099, 12, 1, 14, 30), "SCHEDULED", "Consulta", type);
     }
 
     @Test
@@ -72,6 +72,19 @@ class SendNotificationUseCaseTest {
 
         assertThat(sent.getValue().getType()).isEqualTo(NotificationType.APPOINTMENT_UPDATED);
         assertThat(sent.getValue().getSubject()).isEqualTo("Consulta atualizada");
+    }
+
+    @Test
+    @DisplayName("Gatilho FORCE_ERROR: lança exceção e NÃO envia nem persiste (dispara DLQ)")
+    void forceErrorThrows() {
+        AppointmentEvent ev = new AppointmentEvent(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                LocalDateTime.of(2099, 12, 1, 14, 30), "SCHEDULED",
+                SendNotificationUseCase.FORCE_ERROR_TRIGGER, AppointmentEventType.CREATED);
+
+        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> useCase.process(ev));
+
+        org.mockito.Mockito.verifyNoInteractions(sender);
+        org.mockito.Mockito.verifyNoInteractions(gateway);
     }
 
     @Test

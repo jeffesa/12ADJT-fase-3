@@ -13,6 +13,7 @@ public record AppointmentEvent(
         UUID doctorId,
         LocalDateTime dateTime,
         String status,
+        String description,
         AppointmentEventType eventType
 ) {
 }
