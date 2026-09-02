@@ -118,12 +118,33 @@ public class RabbitConfig {
         factory.setPrefetchCount(PREFETCH_COUNT);
 
         // Acknowledgment MANUAL: o listener faz basicAck/basicNack explicitamente.
-        // (Política de retry com backoff será tratada na TASK-018.)
+        // Retry (backoff) é feito pelo RetryExecutor dentro do listener; ao esgotar,
+        // basicNack sem requeue encaminha para a DLQ.
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 
         // Respeita a config de auto-startup (permite desligar em testes de wiring)
         factory.setAutoStartup(autoStartup);
 
+        return factory;
+    }
+
+    /**
+     * Factory dedicada ao monitor da DLQ: SEM converter JSON, para receber a
+     * mensagem bruta (byte[]) e apenas logá-la — inclusive mensagens malformadas
+     * que causaram falha de conversão (evita erro ao reprocessar na DLQ).
+     */
+    @Bean
+    public SimpleRabbitListenerContainerFactory dlqListenerContainerFactory(
+            ConnectionFactory connectionFactory,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${spring.rabbitmq.listener.simple.auto-startup:true}") boolean autoStartup) {
+
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        // sem message converter: entrega a Message bruta
+        factory.setConcurrentConsumers(1);
+        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        factory.setAutoStartup(autoStartup);
         return factory;
     }
 }
