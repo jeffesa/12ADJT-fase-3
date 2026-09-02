@@ -9,6 +9,12 @@ server:
 app:
   jwt:
     secret: ${JWT_SECRET:dGVjaC1jaGFsbGVuZ2UtZmFzZTMtand0LXNlY3JldC1rZXktMjAyNi1maWFwLXByb2plY3Q=}
+  # Política de retry do consumer (backoff exponencial). Após esgotar, vai para a DLQ.
+  notification:
+    retry:
+      max-attempts: ${NOTIFICATION_RETRY_MAX_ATTEMPTS:3}
+      initial-interval-ms: ${NOTIFICATION_RETRY_INITIAL_MS:1000}
+      multiplier: ${NOTIFICATION_RETRY_MULTIPLIER:2.0}
 
 ---
 spring:
