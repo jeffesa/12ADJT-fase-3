@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +34,9 @@ class AppointmentNotificationListenerTest {
 
     @BeforeEach
     void setUp() {
-        listener = new AppointmentNotificationListener(useCase);
+        // RetryExecutor real, 3 tentativas, intervalos curtos (1ms) para teste rápido
+        RetryExecutor retry = new RetryExecutor(3, 1L, 2.0);
+        listener = new AppointmentNotificationListener(useCase, retry);
     }
 
     private AppointmentEvent event() {
@@ -42,28 +45,28 @@ class AppointmentNotificationListenerTest {
     }
 
     @Test
-    @DisplayName("Sucesso: delega ao use case e faz basicAck")
+    @DisplayName("Sucesso: processa uma vez e faz basicAck")
     void successAcks() throws Exception {
         AppointmentEvent ev = event();
-        long deliveryTag = 42L;
 
-        listener.onAppointmentEvent(ev, channel, deliveryTag);
+        listener.onAppointmentEvent(ev, channel, 42L);
 
-        verify(useCase).process(ev);
-        verify(channel).basicAck(eq(deliveryTag), eq(false));
+        verify(useCase, times(1)).process(ev);
+        verify(channel).basicAck(eq(42L), eq(false));
         verify(channel, never()).basicNack(anyLong(), anyBoolean(), anyBoolean());
     }
 
     @Test
-    @DisplayName("Falha no processamento: basicNack sem requeue (vai para DLQ)")
-    void failureNacksToDlq() throws Exception {
+    @DisplayName("Falha em todas as tentativas: 3 tentativas e basicNack sem requeue (DLQ)")
+    void failureRetriesThenNacksToDlq() throws Exception {
         AppointmentEvent ev = event();
-        long deliveryTag = 7L;
         doThrow(new RuntimeException("erro")).when(useCase).process(ev);
 
-        listener.onAppointmentEvent(ev, channel, deliveryTag);
+        listener.onAppointmentEvent(ev, channel, 7L);
 
-        verify(channel).basicNack(eq(deliveryTag), eq(false), eq(false));
+        // 3 tentativas antes de desistir
+        verify(useCase, times(3)).process(ev);
+        verify(channel).basicNack(eq(7L), eq(false), eq(false));
         verify(channel, never()).basicAck(anyLong(), anyBoolean());
     }
 }

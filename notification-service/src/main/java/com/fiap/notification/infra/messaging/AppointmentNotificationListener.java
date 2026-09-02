@@ -29,21 +29,27 @@ public class AppointmentNotificationListener {
     private static final Logger log = LoggerFactory.getLogger(AppointmentNotificationListener.class);
 
     private final ProcessAppointmentEventUseCase processAppointmentEventUseCase;
+    private final RetryExecutor retryExecutor;
 
-    public AppointmentNotificationListener(ProcessAppointmentEventUseCase processAppointmentEventUseCase) {
+    public AppointmentNotificationListener(ProcessAppointmentEventUseCase processAppointmentEventUseCase,
+                                           RetryExecutor retryExecutor) {
         this.processAppointmentEventUseCase = processAppointmentEventUseCase;
+        this.retryExecutor = retryExecutor;
     }
 
     @RabbitListener(queues = RabbitConfig.NOTIFICATION_QUEUE, containerFactory = "rabbitListenerContainerFactory")
     public void onAppointmentEvent(@Payload AppointmentEvent event,
                                    Channel channel,
                                    @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
-        try {
-            processAppointmentEventUseCase.process(event);
+        // Processa com retry (3 tentativas, backoff exponencial). Se todas
+        // falharem, rejeita sem requeue → mensagem vai para a DLQ.
+        boolean processed = retryExecutor.execute(() -> processAppointmentEventUseCase.process(event));
+
+        if (processed) {
             channel.basicAck(deliveryTag, false);
-        } catch (Exception e) {
-            log.error("Falha ao processar evento appointmentId={}: {}", event.appointmentId(), e.getMessage());
-            // rejeita sem requeue → vai para a DLQ
+        } else {
+            log.error("Evento appointmentId={} não processado após retries; enviando para a DLQ.",
+                    event.appointmentId());
             channel.basicNack(deliveryTag, false, false);
         }
     }
