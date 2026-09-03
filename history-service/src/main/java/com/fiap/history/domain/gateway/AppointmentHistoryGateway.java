@@ -9,6 +9,8 @@ public interface AppointmentHistoryGateway {
 
     AppointmentHistory save(AppointmentHistory appointmentHistory);
 
+    AppointmentHistory findById(UUID id);
+
     List<AppointmentHistory> findByPatientId(UUID patientId);
 
     List<AppointmentHistory> findByDoctorId(UUID doctorId);

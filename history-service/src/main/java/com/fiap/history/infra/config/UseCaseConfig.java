@@ -2,6 +2,7 @@ package com.fiap.history.infra.config;
 
 import com.fiap.history.application.usecase.FindAllAppointmentHistoryUseCase;
 import com.fiap.history.application.usecase.FindAppointmentHistoryByDoctorIdUseCase;
+import com.fiap.history.application.usecase.FindAppointmentHistoryByIdUseCase;
 import com.fiap.history.application.usecase.FindAppointmentHistoryByPatientIdUseCase;
 import com.fiap.history.application.usecase.FindUpcomingAppointmentHistoryByPatientIdUseCase;
 import com.fiap.history.application.usecase.SaveAppointmentHistoryUseCase;
@@ -15,6 +16,12 @@ public class UseCaseConfig {
     @Bean
     public SaveAppointmentHistoryUseCase saveAppointmentHistoryUseCase(AppointmentHistoryGateway appointmentHistoryGateway) {
         return new SaveAppointmentHistoryUseCase(appointmentHistoryGateway);
+    }
+
+    @Bean
+    public FindAppointmentHistoryByIdUseCase findAppointmentHistoryByIdUseCase(
+            AppointmentHistoryGateway appointmentHistoryGateway) {
+        return new FindAppointmentHistoryByIdUseCase(appointmentHistoryGateway);
     }
 
     @Bean

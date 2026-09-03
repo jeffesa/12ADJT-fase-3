@@ -2,6 +2,7 @@ package com.fiap.history.infra.persistence;
 
 import com.fiap.history.domain.entity.AppointmentHistory;
 import com.fiap.history.domain.gateway.AppointmentHistoryGateway;
+import com.fiap.history.domain.shared.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,13 @@ public class AppointmentHistoryJpaGateway implements AppointmentHistoryGateway {
     public AppointmentHistory save(AppointmentHistory appointmentHistory) {
         AppointmentHistoryJpaEntity entity = AppointmentHistoryJpaEntity.fromDomain(appointmentHistory);
         return appointmentHistoryRepository.save(entity).toDomain();
+    }
+
+    @Override
+    public AppointmentHistory findById(UUID id) {
+        return appointmentHistoryRepository.findById(id)
+                .map(AppointmentHistoryJpaEntity::toDomain)
+                .orElseThrow(() -> new EntityNotFoundException("AppointmentHistory not found with id: " + id));
     }
 
     @Override
