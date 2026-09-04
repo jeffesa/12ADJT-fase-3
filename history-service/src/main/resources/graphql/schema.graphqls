@@ -3,6 +3,23 @@ type Query {
     appointmentsByDoctor(doctorId: ID!): [AppointmentHistory]
     upcomingAppointments(patientId: ID!): [AppointmentHistory]
     appointmentHistory(id: ID!): AppointmentHistory
+    allAppointmentHistories: [AppointmentHistory]
+}
+
+input AppointmentHistoryInput {
+    appointmentId: ID!
+    patientId: ID!
+    doctorId: ID!
+    patientName: String
+    doctorName: String
+    dateTime: String
+    status: String
+    description: String
+    eventType: String
+}
+
+type Mutation {
+    saveAppointmentHistory(input: AppointmentHistoryInput!): AppointmentHistory
 }
 
 type AppointmentHistory {
