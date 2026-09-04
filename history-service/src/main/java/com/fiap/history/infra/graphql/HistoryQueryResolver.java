@@ -19,15 +19,18 @@ public class HistoryQueryResolver {
     private final FindAppointmentHistoryByPatientIdUseCase findAppointmentHistoryByPatientIdUseCase;
     private final FindAppointmentHistoryByDoctorIdUseCase findAppointmentHistoryByDoctorIdUseCase;
     private final FindUpcomingAppointmentHistoryByPatientIdUseCase findUpcomingAppointmentHistoryByPatientIdUseCase;
+    private final com.fiap.history.application.usecase.FindAllAppointmentHistoryUseCase findAllAppointmentHistoryUseCase;
 
     public HistoryQueryResolver(FindAppointmentHistoryByIdUseCase findAppointmentHistoryByIdUseCase,
                                FindAppointmentHistoryByPatientIdUseCase findAppointmentHistoryByPatientIdUseCase,
                                FindAppointmentHistoryByDoctorIdUseCase findAppointmentHistoryByDoctorIdUseCase,
-                               FindUpcomingAppointmentHistoryByPatientIdUseCase findUpcomingAppointmentHistoryByPatientIdUseCase) {
+                               FindUpcomingAppointmentHistoryByPatientIdUseCase findUpcomingAppointmentHistoryByPatientIdUseCase,
+                               com.fiap.history.application.usecase.FindAllAppointmentHistoryUseCase findAllAppointmentHistoryUseCase) {
         this.findAppointmentHistoryByIdUseCase = findAppointmentHistoryByIdUseCase;
         this.findAppointmentHistoryByPatientIdUseCase = findAppointmentHistoryByPatientIdUseCase;
         this.findAppointmentHistoryByDoctorIdUseCase = findAppointmentHistoryByDoctorIdUseCase;
         this.findUpcomingAppointmentHistoryByPatientIdUseCase = findUpcomingAppointmentHistoryByPatientIdUseCase;
+        this.findAllAppointmentHistoryUseCase = findAllAppointmentHistoryUseCase;
     }
 
     @QueryMapping
@@ -59,4 +62,13 @@ public class HistoryQueryResolver {
         AppointmentHistory appointmentHistory = findAppointmentHistoryByIdUseCase.execute(id);
         return AppointmentHistoryGraphql.fromDomain(appointmentHistory);
     }
+
+    @QueryMapping
+    public List<AppointmentHistoryGraphql> allAppointmentHistories() {
+        return findAllAppointmentHistoryUseCase.execute()
+                .stream()
+                .map(AppointmentHistoryGraphql::fromDomain)
+                .toList();
+    }
 }
+
