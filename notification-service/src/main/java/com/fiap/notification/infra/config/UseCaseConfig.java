@@ -1,5 +1,6 @@
 package com.fiap.notification.infra.config;
 
+import com.fiap.notification.application.usecase.FindAllNotificationsUseCase;
 import com.fiap.notification.application.usecase.ProcessAppointmentEventUseCase;
 import com.fiap.notification.application.usecase.SendNotificationUseCase;
 import com.fiap.notification.domain.gateway.NotificationGateway;
@@ -18,5 +19,10 @@ public class UseCaseConfig {
             NotificationSender notificationSender,
             NotificationGateway notificationGateway) {
         return new SendNotificationUseCase(notificationSender, notificationGateway);
+    }
+
+    @Bean
+    public FindAllNotificationsUseCase findAllNotificationsUseCase(NotificationGateway notificationGateway) {
+        return new FindAllNotificationsUseCase(notificationGateway);
     }
 }
