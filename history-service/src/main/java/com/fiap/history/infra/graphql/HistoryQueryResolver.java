@@ -1,12 +1,18 @@
 package com.fiap.history.infra.graphql;
 
+import com.fiap.history.application.usecase.FindAllAppointmentHistoryUseCase;
 import com.fiap.history.application.usecase.FindAppointmentHistoryByDoctorIdUseCase;
 import com.fiap.history.application.usecase.FindAppointmentHistoryByIdUseCase;
 import com.fiap.history.application.usecase.FindAppointmentHistoryByPatientIdUseCase;
 import com.fiap.history.application.usecase.FindUpcomingAppointmentHistoryByPatientIdUseCase;
 import com.fiap.history.domain.entity.AppointmentHistory;
+import com.fiap.history.domain.entity.UserRole;
+import com.fiap.history.domain.shared.BusinessException;
+import com.fiap.history.infra.security.AuthenticatedUser;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -19,13 +25,13 @@ public class HistoryQueryResolver {
     private final FindAppointmentHistoryByPatientIdUseCase findAppointmentHistoryByPatientIdUseCase;
     private final FindAppointmentHistoryByDoctorIdUseCase findAppointmentHistoryByDoctorIdUseCase;
     private final FindUpcomingAppointmentHistoryByPatientIdUseCase findUpcomingAppointmentHistoryByPatientIdUseCase;
-    private final com.fiap.history.application.usecase.FindAllAppointmentHistoryUseCase findAllAppointmentHistoryUseCase;
+    private final FindAllAppointmentHistoryUseCase findAllAppointmentHistoryUseCase;
 
     public HistoryQueryResolver(FindAppointmentHistoryByIdUseCase findAppointmentHistoryByIdUseCase,
                                FindAppointmentHistoryByPatientIdUseCase findAppointmentHistoryByPatientIdUseCase,
                                FindAppointmentHistoryByDoctorIdUseCase findAppointmentHistoryByDoctorIdUseCase,
                                FindUpcomingAppointmentHistoryByPatientIdUseCase findUpcomingAppointmentHistoryByPatientIdUseCase,
-                               com.fiap.history.application.usecase.FindAllAppointmentHistoryUseCase findAllAppointmentHistoryUseCase) {
+                               FindAllAppointmentHistoryUseCase findAllAppointmentHistoryUseCase) {
         this.findAppointmentHistoryByIdUseCase = findAppointmentHistoryByIdUseCase;
         this.findAppointmentHistoryByPatientIdUseCase = findAppointmentHistoryByPatientIdUseCase;
         this.findAppointmentHistoryByDoctorIdUseCase = findAppointmentHistoryByDoctorIdUseCase;
@@ -35,7 +41,9 @@ public class HistoryQueryResolver {
 
     @QueryMapping
     public List<AppointmentHistoryGraphql> appointmentsByPatient(@Argument UUID patientId) {
-        return findAppointmentHistoryByPatientIdUseCase.execute(patientId)
+        AuthenticatedUser user = currentUser();
+        return findAppointmentHistoryByPatientIdUseCase
+                .execute(patientId, user.userId(), UserRole.fromToken(user.role()))
                 .stream()
                 .map(AppointmentHistoryGraphql::fromDomain)
                 .toList();
@@ -43,7 +51,9 @@ public class HistoryQueryResolver {
 
     @QueryMapping
     public List<AppointmentHistoryGraphql> appointmentsByDoctor(@Argument UUID doctorId) {
-        return findAppointmentHistoryByDoctorIdUseCase.execute(doctorId)
+        AuthenticatedUser user = currentUser();
+        return findAppointmentHistoryByDoctorIdUseCase
+                .execute(doctorId, user.userId(), UserRole.fromToken(user.role()))
                 .stream()
                 .map(AppointmentHistoryGraphql::fromDomain)
                 .toList();
@@ -51,7 +61,9 @@ public class HistoryQueryResolver {
 
     @QueryMapping
     public List<AppointmentHistoryGraphql> upcomingAppointments(@Argument UUID patientId) {
-        return findUpcomingAppointmentHistoryByPatientIdUseCase.execute(patientId)
+        AuthenticatedUser user = currentUser();
+        return findUpcomingAppointmentHistoryByPatientIdUseCase
+                .execute(patientId, user.userId(), UserRole.fromToken(user.role()))
                 .stream()
                 .map(AppointmentHistoryGraphql::fromDomain)
                 .toList();
@@ -59,16 +71,31 @@ public class HistoryQueryResolver {
 
     @QueryMapping
     public AppointmentHistoryGraphql appointmentHistory(@Argument UUID id) {
-        AppointmentHistory appointmentHistory = findAppointmentHistoryByIdUseCase.execute(id);
+        AuthenticatedUser user = currentUser();
+        AppointmentHistory appointmentHistory = findAppointmentHistoryByIdUseCase
+                .execute(id, user.userId(), UserRole.fromToken(user.role()));
         return AppointmentHistoryGraphql.fromDomain(appointmentHistory);
     }
 
     @QueryMapping
     public List<AppointmentHistoryGraphql> allAppointmentHistories() {
-        return findAllAppointmentHistoryUseCase.execute()
+        AuthenticatedUser user = currentUser();
+        return findAllAppointmentHistoryUseCase
+                .execute(UserRole.fromToken(user.role()))
                 .stream()
                 .map(AppointmentHistoryGraphql::fromDomain)
                 .toList();
     }
-}
 
+    /**
+     * Recupera o usuário autenticado do SecurityContext.
+     * Base para a validação de ownership (paciente só vê seus dados).
+     */
+    private AuthenticatedUser currentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticatedUser user)) {
+            throw new BusinessException("Usuário não autenticado");
+        }
+        return user;
+    }
+}

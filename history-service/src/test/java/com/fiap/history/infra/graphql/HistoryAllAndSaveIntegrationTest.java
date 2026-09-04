@@ -2,15 +2,21 @@ package com.fiap.history.infra.graphql;
 
 import com.fiap.history.infra.persistence.AppointmentHistoryJpaEntity;
 import com.fiap.history.infra.persistence.AppointmentHistoryRepository;
+import com.fiap.history.infra.security.AuthenticatedUser;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,8 +36,18 @@ class HistoryAllAndSaveIntegrationTest {
     @Autowired
     private AppointmentHistoryRepository appointmentHistoryRepository;
 
+    @AfterEach
+    void clearContext() {
+        SecurityContextHolder.clearContext();
+    }
+
     @BeforeEach
     void setUp() {
+        // Enfermeiro: acesso amplo para consultar/listar
+        AuthenticatedUser principal = new AuthenticatedUser(UUID.randomUUID(), "nurse@test.com", "ROLE_NURSE");
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
+                principal, null, List.of(new SimpleGrantedAuthority("ROLE_NURSE"))));
+
         appointmentHistoryRepository.deleteAll();
 
         AppointmentHistoryJpaEntity entity = new AppointmentHistoryJpaEntity();
