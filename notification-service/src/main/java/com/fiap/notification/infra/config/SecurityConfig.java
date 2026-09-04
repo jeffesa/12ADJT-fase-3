@@ -33,6 +33,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Actuator endpoints são públicos (health checks do Docker)
                         .requestMatchers("/actuator/**").permitAll()
+                        // Swagger/OpenAPI
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         // Demais endpoints requerem autenticação
                         .anyRequest().authenticated()
                 )

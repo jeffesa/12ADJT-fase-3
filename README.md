@@ -126,6 +126,7 @@ Após a subida (aguarde os containers ficarem `healthy`):
 |---------|-----|
 | Scheduling — Swagger UI | http://localhost:8081/swagger-ui.html |
 | Scheduling — Health | http://localhost:8081/actuator/health |
+| Notification — Swagger UI | http://localhost:8082/swagger-ui.html |
 | Notification — Health | http://localhost:8082/actuator/health |
 | History — Health | http://localhost:8083/actuator/health |
 | History — GraphiQL | http://localhost:8083/graphiql |
@@ -264,6 +265,23 @@ NOTIFICATION_DLQ_MONITOR_ENABLED=false docker-compose up --build
 
 (ou defina `app.notification.dlq.monitor.enabled=false`). Assim a mensagem
 permanece visível na DLQ para inspeção manual e eventual reprocessamento.
+
+### Listar notificações processadas
+
+O notification-service persiste as notificações enviadas e expõe um endpoint REST
+para consultá-las (útil para comprovar que os eventos foram consumidos):
+
+```bash
+# Todas as notificações (requer JWT — use um token obtido no scheduling-service)
+curl -H "Authorization: Bearer <TOKEN>" http://localhost:8082/api/v1/notifications
+
+# Filtro opcional por tipo
+curl -H "Authorization: Bearer <TOKEN>" \
+  "http://localhost:8082/api/v1/notifications?type=APPOINTMENT_CREATED"
+```
+
+Tipos válidos: `APPOINTMENT_CREATED`, `APPOINTMENT_UPDATED`, `APPOINTMENT_REMINDER`.
+Documentação interativa em http://localhost:8082/swagger-ui.html.
 
 ---
 
