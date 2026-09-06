@@ -3,6 +3,7 @@ package com.fiap.scheduling.application.usecase;
 import com.fiap.scheduling.domain.entity.Appointment;
 import com.fiap.scheduling.domain.entity.UserRole;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
+import com.fiap.scheduling.domain.shared.AccessDeniedException;
 import com.fiap.scheduling.domain.shared.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ class FindAppointmentsByDoctorUseCaseTest {
         UUID doctorId = UUID.randomUUID();
         UUID anotherDoctorId = UUID.randomUUID();
 
-        BusinessException exception = assertThrows(BusinessException.class,
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
                 () -> useCase.execute(anotherDoctorId, doctorId, UserRole.ROLE_DOCTOR));
 
         assertEquals("Médico só pode visualizar suas próprias consultas", exception.getMessage());

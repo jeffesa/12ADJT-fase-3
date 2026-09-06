@@ -7,6 +7,7 @@ import com.fiap.scheduling.domain.event.AppointmentEvent;
 import com.fiap.scheduling.domain.event.EventPublisher;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
 import com.fiap.scheduling.domain.gateway.UserGateway;
+import com.fiap.scheduling.domain.shared.AccessDeniedException;
 import com.fiap.scheduling.domain.shared.BusinessException;
 import com.fiap.scheduling.domain.shared.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +74,7 @@ class UpdateAppointmentUseCaseTest {
         Appointment appointment = Appointment.create(UUID.randomUUID(), UUID.randomUUID(), LocalDateTime.now().plusDays(1), "Inicial");
         appointment.setId(appointmentId);
 
-        BusinessException exception = assertThrows(BusinessException.class,
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
                 () -> useCase.execute(appointmentId, appointment.getPatientId(), appointment.getDoctorId(), LocalDateTime.now().plusDays(2), "Novo", UUID.randomUUID(), UserRole.ROLE_PATIENT));
 
         assertEquals("Apenas médicos e enfermeiros podem editar consultas", exception.getMessage());
@@ -91,7 +92,7 @@ class UpdateAppointmentUseCaseTest {
 
         when(appointmentGateway.findById(appointmentId)).thenReturn(Optional.of(appointment));
 
-        BusinessException exception = assertThrows(BusinessException.class,
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
                 () -> useCase.execute(appointmentId, patientId, doctorId, LocalDateTime.now().plusDays(2), "Novo", currentDoctorId, UserRole.ROLE_DOCTOR));
 
         assertEquals("Médico só pode editar suas consultas", exception.getMessage());

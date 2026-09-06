@@ -3,7 +3,7 @@ package com.fiap.history.application.usecase;
 import com.fiap.history.domain.entity.AppointmentHistory;
 import com.fiap.history.domain.entity.UserRole;
 import com.fiap.history.domain.gateway.AppointmentHistoryGateway;
-import com.fiap.history.domain.shared.BusinessException;
+import com.fiap.history.domain.shared.AccessDeniedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ class FindAppointmentHistoryByDoctorIdUseCaseTest {
     void doctorCannotSeeOtherDoctor() {
         UUID doctorId = UUID.randomUUID();
 
-        assertThrows(BusinessException.class,
+        assertThrows(AccessDeniedException.class,
                 () -> useCase.execute(doctorId, UUID.randomUUID(), UserRole.ROLE_DOCTOR));
 
         verify(appointmentHistoryGateway, never()).findByDoctorId(doctorId);
@@ -73,7 +73,7 @@ class FindAppointmentHistoryByDoctorIdUseCaseTest {
     void patientCannotQueryByDoctor() {
         UUID doctorId = UUID.randomUUID();
 
-        assertThrows(BusinessException.class,
+        assertThrows(AccessDeniedException.class,
                 () -> useCase.execute(doctorId, UUID.randomUUID(), UserRole.ROLE_PATIENT));
 
         verify(appointmentHistoryGateway, never()).findByDoctorId(doctorId);
@@ -84,7 +84,7 @@ class FindAppointmentHistoryByDoctorIdUseCaseTest {
     void nullRoleRejected() {
         UUID doctorId = UUID.randomUUID();
 
-        assertThrows(BusinessException.class,
+        assertThrows(AccessDeniedException.class,
                 () -> useCase.execute(doctorId, doctorId, null));
 
         verify(appointmentHistoryGateway, never()).findByDoctorId(doctorId);

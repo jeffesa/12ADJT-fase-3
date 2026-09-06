@@ -32,6 +32,17 @@ public class GraphQlExceptionResolver extends DataFetcherExceptionResolverAdapte
         Map<String, Object> extensions = new HashMap<>();
         extensions.put("timestamp", Instant.now().toString());
 
+        if (ex instanceof com.fiap.history.domain.shared.AccessDeniedException ade) {
+            extensions.put("code", "FORBIDDEN");
+            extensions.put("status", 403);
+            log.warn("Access denied (role/ownership): {}", ade.getMessage());
+            return GraphqlErrorBuilder.newError()
+                    .message(ade.getMessage())
+                    .path(env.getExecutionStepInfo().getPath().toList())
+                    .extensions(extensions)
+                    .build();
+        }
+
         if (ex instanceof EntityNotFoundException enf) {
             extensions.put("code", "NOT_FOUND");
             extensions.put("status", 404);
