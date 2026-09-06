@@ -26,12 +26,15 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      # Sem SONAR_TOKEN: só build + testes + check de cobertura
       - name: Build and Test
+        if: ${{ env.SONAR_TOKEN == '' }}
         run: mvn -B clean verify
 
-      # Roda apenas se o secret SONAR_TOKEN estiver configurado no repositório
-      - name: SonarCloud Scan
+      # Com SONAR_TOKEN: build + testes + análise SonarCloud no mesmo run
+      # (o sonar:sonar precisa dos relatórios JaCoCo gerados no verify)
+      - name: Build, Test and SonarCloud Scan
         if: ${{ env.SONAR_TOKEN != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B sonar:sonar -Dsonar.host.url=https://sonarcloud.io
+        run: mvn -B clean verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io
