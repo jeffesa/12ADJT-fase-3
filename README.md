@@ -1,12 +1,14 @@
 # Tech Challenge Fase 3 — Sistema Hospitalar de Agendamento de Consultas
 
 [![CI/CD](https://github.com/jeffesa/12ADJT-fase-3/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/jeffesa/12ADJT-fase-3/actions/workflows/ci-cd.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jeffesa_12ADJT-fase-3&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jeffesa_12ADJT-fase-3)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=jeffesa_12ADJT-fase-3&metric=coverage)](https://sonarcloud.io/summary/new_code?id=jeffesa_12ADJT-fase-3)
 
 Sistema hospitalar baseado em microsserviços para agendamento de consultas médicas, com comunicação assíncrona (RabbitMQ + DLQ), segurança com JWT, API REST e GraphQL, seguindo Clean Architecture.
 
 **Repositório:** https://github.com/jeffesa/12ADJT-fase-3
 
-> Badge de cobertura de testes (SonarCloud) será adicionado na TASK-031 (configuração de JaCoCo + SonarCloud).
+> Cobertura de testes garantida por JaCoCo (check ≥ 80% de linhas por módulo, roda em `mvn verify`) e reportada ao SonarCloud. Ver `sonar-project.properties`.
 
 > Continuação da Fase 2. Este projeto evolui a arquitetura para microsserviços com mensageria, mantendo o padrão de Clean Architecture (domain → application → infra).
 
