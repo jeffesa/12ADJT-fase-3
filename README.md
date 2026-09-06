@@ -221,6 +221,28 @@ Os serviços de notificação e histórico consomem esses eventos por meio de fi
 
 Inspeção via RabbitMQ Management UI: http://localhost:15672 (guest / guest).
 
+### Fluxo de integração ponta a ponta (scheduling → RabbitMQ → history)
+
+Ao criar uma consulta no scheduling-service, o evento é publicado na exchange, o
+history-service consome, persiste no `postgres-history` e o registro fica
+disponível via GraphQL. Para validar o fluxo completo:
+
+```bash
+# 1. Obtenha um token (registre um médico) e crie uma consulta
+TOKEN=... # token retornado no /api/v1/auth/register (role DOCTOR)
+curl -X POST http://localhost:8081/api/v1/appointments \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"patientId":"<PAT>","doctorId":"<DOC>","dateTime":"2099-12-01T14:30:00","description":"Consulta"}'
+
+# 2. Consulte o histórico persistido via GraphQL (porta 8083)
+curl -X POST http://localhost:8083/graphql \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"query":"{ appointmentsByPatient(patientId: \"<PAT>\") { appointmentId status eventType } }"}'
+```
+
+O mesmo `appointmentId` criado no passo 1 é retornado no passo 2, comprovando
+scheduling → RabbitMQ → history → GraphQL.
+
 ### Como testar a DLQ (fluxo de falha)
 
 Para demonstrar o retry + Dead Letter Queue de ponta a ponta, o notification-service
