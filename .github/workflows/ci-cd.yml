@@ -19,19 +19,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 17
+      # Instala Java 21 (necessário para o scanner do SonarCloud) e Java 17
+      # (usado para compilar/rodar o projeto). O último listado vira o JAVA_HOME
+      # padrão, então o build roda em 17; o scan usa JAVA_HOME_21_X64.
+      - name: Set up JDKs (21 for Sonar, 17 for build)
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: |
+            21
+            17
           cache: maven
 
+      # Build + testes + check de cobertura (Java 17)
       - name: Build and Test
         run: mvn -B clean verify
 
-      # Roda apenas se o secret SONAR_TOKEN estiver configurado no repositório
+      # Análise SonarCloud com Java 21 (scanner 4.x exige 21+); reutiliza os
+      # relatórios JaCoCo gerados no step anterior. Só roda se o secret existir.
       - name: SonarCloud Scan
         if: ${{ env.SONAR_TOKEN != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JAVA_HOME: ${{ env.JAVA_HOME_21_X64 }}
         run: mvn -B sonar:sonar -Dsonar.host.url=https://sonarcloud.io
