@@ -163,4 +163,34 @@ class SchedulingIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    @DisplayName("Integração de autorização: PATIENT vendo consulta de OUTRO paciente → 403 na stack real")
+    void patientCannotSeeOtherPatientAppointment() throws Exception {
+        JsonNode doctor = register("Dr X", "drx@hosp.com", "DOCTOR");
+        JsonNode patientOwner = register("Dono", "dono@mail.com", "PATIENT");
+        JsonNode patientOther = register("Outro", "outro@mail.com", "PATIENT");
+
+        String doctorToken = login("drx@hosp.com");
+        String otherToken = login("outro@mail.com");
+
+        String body = objectMapper.writeValueAsString(Map.of(
+                "patientId", patientOwner.get("userId").asText(),
+                "doctorId", doctor.get("userId").asText(),
+                "dateTime", "2099-12-01T14:30:00",
+                "description", "Consulta privada"));
+
+        MvcResult created = mockMvc.perform(post("/api/v1/appointments")
+                        .header("Authorization", "Bearer " + doctorToken)
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String appointmentId = objectMapper.readTree(created.getResponse().getContentAsString())
+                .get("id").asText();
+
+        // Outro paciente tenta ver a consulta que não é dele → 403 (ownership negado)
+        mockMvc.perform(get("/api/v1/appointments/" + appointmentId)
+                        .header("Authorization", "Bearer " + otherToken))
+                .andExpect(status().isForbidden());
+    }
 }

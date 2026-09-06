@@ -7,6 +7,7 @@ import com.fiap.scheduling.domain.event.AppointmentEvent;
 import com.fiap.scheduling.domain.event.EventPublisher;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
 import com.fiap.scheduling.domain.gateway.UserGateway;
+import com.fiap.scheduling.domain.shared.AccessDeniedException;
 import com.fiap.scheduling.domain.shared.BusinessException;
 import com.fiap.scheduling.domain.shared.EntityNotFoundException;
 
@@ -31,14 +32,14 @@ public class UpdateAppointmentUseCase {
                                LocalDateTime dateTime, String description,
                                UUID currentUserId, UserRole currentUserRole) {
         if (currentUserRole != UserRole.ROLE_DOCTOR && currentUserRole != UserRole.ROLE_NURSE) {
-            throw new BusinessException("Apenas médicos e enfermeiros podem editar consultas");
+            throw new AccessDeniedException("Apenas médicos e enfermeiros podem editar consultas");
         }
 
         Appointment appointment = appointmentGateway.findById(appointmentId)
                 .orElseThrow(() -> new EntityNotFoundException("Consulta não encontrada"));
 
         if (currentUserRole == UserRole.ROLE_DOCTOR && !appointment.getDoctorId().equals(currentUserId)) {
-            throw new BusinessException("Médico só pode editar suas consultas");
+            throw new AccessDeniedException("Médico só pode editar suas consultas");
         }
 
         if (patientId != null) {

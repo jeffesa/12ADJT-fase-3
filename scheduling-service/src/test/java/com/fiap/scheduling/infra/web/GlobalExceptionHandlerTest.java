@@ -39,10 +39,19 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    @DisplayName("AccessDeniedException → 403")
+    @DisplayName("AccessDeniedException (Spring Security) → 403")
     void accessDenied() {
         ProblemDetail pd = handler.handleAccessDenied(new AccessDeniedException("negado"));
         assertEquals(HttpStatus.FORBIDDEN.value(), pd.getStatus());
+    }
+
+    @Test
+    @DisplayName("AccessDeniedException (domínio, role/ownership) → 403")
+    void domainAccessDenied() {
+        ProblemDetail pd = handler.handleDomainAccessDenied(
+                new com.fiap.scheduling.domain.shared.AccessDeniedException("sem permissão"));
+        assertEquals(HttpStatus.FORBIDDEN.value(), pd.getStatus());
+        assertEquals("sem permissão", pd.getDetail());
     }
 
     @Test

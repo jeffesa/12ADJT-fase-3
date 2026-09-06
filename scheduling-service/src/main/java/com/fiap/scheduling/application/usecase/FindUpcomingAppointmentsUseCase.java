@@ -3,7 +3,7 @@ package com.fiap.scheduling.application.usecase;
 import com.fiap.scheduling.domain.entity.Appointment;
 import com.fiap.scheduling.domain.entity.UserRole;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
-import com.fiap.scheduling.domain.shared.BusinessException;
+import com.fiap.scheduling.domain.shared.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +19,7 @@ public class FindUpcomingAppointmentsUseCase {
 
     public List<Appointment> execute(UUID currentUserId, UserRole currentUserRole) {
         if (currentUserRole == null) {
-            throw new BusinessException("Usuário não autenticado");
+            throw new AccessDeniedException("Usuário não autenticado");
         }
 
         List<Appointment> upcomingAppointments = appointmentGateway.findUpcoming(LocalDateTime.now());

@@ -3,6 +3,7 @@ package com.fiap.scheduling.application.usecase;
 import com.fiap.scheduling.domain.entity.Appointment;
 import com.fiap.scheduling.domain.entity.UserRole;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
+import com.fiap.scheduling.domain.shared.AccessDeniedException;
 import com.fiap.scheduling.domain.shared.BusinessException;
 import com.fiap.scheduling.domain.shared.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,7 +75,7 @@ class CancelAppointmentUseCaseTest {
 
         when(appointmentGateway.findById(appointmentId)).thenReturn(Optional.of(appointment));
 
-        BusinessException exception = assertThrows(BusinessException.class,
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
                 () -> useCase.execute(appointmentId, UUID.randomUUID(), UserRole.ROLE_PATIENT));
 
         assertEquals("Usuário sem permissão para cancelar esta consulta", exception.getMessage());

@@ -3,7 +3,7 @@ package com.fiap.history.application.usecase;
 import com.fiap.history.domain.entity.AppointmentHistory;
 import com.fiap.history.domain.entity.UserRole;
 import com.fiap.history.domain.gateway.AppointmentHistoryGateway;
-import com.fiap.history.domain.shared.BusinessException;
+import com.fiap.history.domain.shared.AccessDeniedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,14 +57,14 @@ class FindAllAppointmentHistoryUseCaseTest {
     @Test
     @DisplayName("Paciente NÃO pode listar todo o histórico")
     void patientCannotListAll() {
-        assertThrows(BusinessException.class, () -> useCase.execute(UserRole.ROLE_PATIENT));
+        assertThrows(AccessDeniedException.class, () -> useCase.execute(UserRole.ROLE_PATIENT));
         verify(appointmentHistoryGateway, never()).findAll();
     }
 
     @Test
     @DisplayName("Role nula é rejeitada")
     void nullRoleRejected() {
-        assertThrows(BusinessException.class, () -> useCase.execute(null));
+        assertThrows(AccessDeniedException.class, () -> useCase.execute(null));
         verify(appointmentHistoryGateway, never()).findAll();
     }
 }
