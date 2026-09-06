@@ -3,7 +3,7 @@ package com.fiap.scheduling.application.usecase;
 import com.fiap.scheduling.domain.entity.Appointment;
 import com.fiap.scheduling.domain.entity.UserRole;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
-import com.fiap.scheduling.domain.shared.BusinessException;
+import com.fiap.scheduling.domain.shared.AccessDeniedException;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,13 +18,13 @@ public class FindAppointmentsByPatientUseCase {
 
     public List<Appointment> execute(UUID patientId, UUID currentUserId, UserRole currentUserRole) {
         if (currentUserRole == UserRole.ROLE_PATIENT && !patientId.equals(currentUserId)) {
-            throw new BusinessException("Paciente só pode visualizar suas próprias consultas");
+            throw new AccessDeniedException("Paciente só pode visualizar suas próprias consultas");
         }
 
         if (currentUserRole != UserRole.ROLE_PATIENT
                 && currentUserRole != UserRole.ROLE_DOCTOR
                 && currentUserRole != UserRole.ROLE_NURSE) {
-            throw new BusinessException("Usuário sem permissão para consultar consultas de paciente");
+            throw new AccessDeniedException("Usuário sem permissão para consultar consultas de paciente");
         }
 
         return appointmentGateway.findByPatientId(patientId);

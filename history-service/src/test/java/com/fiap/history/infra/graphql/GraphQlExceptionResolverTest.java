@@ -53,6 +53,17 @@ class GraphQlExceptionResolverTest {
     }
 
     @Test
+    @DisplayName("AccessDeniedException (domínio) → code FORBIDDEN / status 403")
+    void domainAccessDenied() {
+        GraphQLError error = resolver.resolveToSingleError(
+                new com.fiap.history.domain.shared.AccessDeniedException("sem permissão"), env);
+
+        assertThat(error).isNotNull();
+        assertThat(error.getExtensions()).containsEntry("code", "FORBIDDEN");
+        assertThat(error.getExtensions()).containsEntry("status", 403);
+    }
+
+    @Test
     @DisplayName("AuthenticationException → code UNAUTHORIZED / status 401")
     void unauthorized() {
         AuthenticationException ex = new AuthenticationException("no auth") {

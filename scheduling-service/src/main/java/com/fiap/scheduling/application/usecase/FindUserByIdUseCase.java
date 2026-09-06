@@ -3,7 +3,7 @@ package com.fiap.scheduling.application.usecase;
 import com.fiap.scheduling.domain.entity.User;
 import com.fiap.scheduling.domain.entity.UserRole;
 import com.fiap.scheduling.domain.gateway.UserGateway;
-import com.fiap.scheduling.domain.shared.BusinessException;
+import com.fiap.scheduling.domain.shared.AccessDeniedException;
 import com.fiap.scheduling.domain.shared.EntityNotFoundException;
 
 import java.util.UUID;
@@ -22,7 +22,7 @@ public class FindUserByIdUseCase {
 
     public User execute(UUID targetUserId, UUID currentUserId, UserRole currentUserRole) {
         if (currentUserRole == UserRole.ROLE_PATIENT && !targetUserId.equals(currentUserId)) {
-            throw new BusinessException("Paciente só pode consultar o próprio perfil");
+            throw new AccessDeniedException("Paciente só pode consultar o próprio perfil");
         }
 
         return userGateway.findById(targetUserId)

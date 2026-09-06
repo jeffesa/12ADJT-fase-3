@@ -24,6 +24,18 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(com.fiap.scheduling.domain.shared.AccessDeniedException.class)
+    public ProblemDetail handleDomainAccessDenied(com.fiap.scheduling.domain.shared.AccessDeniedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problem.setTitle("Acesso negado");
+        problem.setDetail(ex.getMessage());
+        problem.setType(URI.create("https://api.fiap.com/errors/forbidden"));
+        problem.setProperty("timestamp", Instant.now());
+
+        log.warn("Acesso negado (role/ownership): {}", ex.getMessage());
+        return problem;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);

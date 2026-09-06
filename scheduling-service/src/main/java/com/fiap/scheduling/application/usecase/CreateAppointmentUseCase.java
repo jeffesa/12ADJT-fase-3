@@ -7,6 +7,7 @@ import com.fiap.scheduling.domain.event.AppointmentEvent;
 import com.fiap.scheduling.domain.event.EventPublisher;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
 import com.fiap.scheduling.domain.gateway.UserGateway;
+import com.fiap.scheduling.domain.shared.AccessDeniedException;
 import com.fiap.scheduling.domain.shared.BusinessException;
 import com.fiap.scheduling.domain.shared.EntityNotFoundException;
 
@@ -30,11 +31,11 @@ public class CreateAppointmentUseCase {
     public Appointment execute(UUID patientId, UUID doctorId, LocalDateTime dateTime,
                                String description, UUID currentUserId, UserRole currentUserRole) {
         if (currentUserRole != UserRole.ROLE_DOCTOR && currentUserRole != UserRole.ROLE_NURSE) {
-            throw new BusinessException("Apenas médicos e enfermeiros podem criar consultas");
+            throw new AccessDeniedException("Apenas médicos e enfermeiros podem criar consultas");
         }
 
         if (currentUserRole == UserRole.ROLE_DOCTOR && !doctorId.equals(currentUserId)) {
-            throw new BusinessException("Médico só pode agendar consultas para si");
+            throw new AccessDeniedException("Médico só pode agendar consultas para si");
         }
 
         User patient = userGateway.findById(patientId)

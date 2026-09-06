@@ -134,6 +134,13 @@ class HistoryGraphQlIntegrationTest {
             """)
                 .execute()
                 .errors()
-                .satisfy(errors -> org.assertj.core.api.Assertions.assertThat(errors).isNotEmpty());
+                .satisfy(errors -> {
+                    org.assertj.core.api.Assertions.assertThat(errors).isNotEmpty();
+                    // Ownership negado agora é FORBIDDEN/403 (não mais BUSINESS_ERROR/422)
+                    Object code = errors.get(0).getExtensions().get("code");
+                    Object status = errors.get(0).getExtensions().get("status");
+                    org.assertj.core.api.Assertions.assertThat(code).isEqualTo("FORBIDDEN");
+                    org.assertj.core.api.Assertions.assertThat(status).isEqualTo(403);
+                });
     }
 }
