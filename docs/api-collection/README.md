@@ -57,7 +57,7 @@ npx newman run fase3-hospital.postman_collection.json --folder local
 
 ## Cenários
 
-**Sucesso:** register (DOCTOR/PATIENT), login, criar/buscar/atualizar/listar/cancelar consulta, listar por paciente e por médico, upcoming, listar usuários, listar notificações (com e sem filtro), queries GraphQL (`appointmentsByPatient`, `appointmentsByDoctor`, `allAppointmentHistories`, `upcomingAppointments`).
+**Sucesso:** register (DOCTOR/PATIENT), login, criar/buscar/atualizar/listar/cancelar consulta, listar por paciente e por médico, upcoming, listar usuários, listar notificações (com e sem filtro), queries GraphQL (`appointmentsByPatient`, `appointmentsByDoctor`, `allAppointmentHistories`, `appointmentHistory` por id, `upcomingAppointments`).
 
 **Erro:** login com senha inválida, criar consulta sem token, buscar consulta inexistente, notificações sem token, GraphQL sem token.
 
