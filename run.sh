@@ -4,7 +4,7 @@
 # Script runner: facilita execução do projeto multi-serviço.
 #
 # Uso interativo:  ./run.sh
-# Uso direto:      ./run.sh [docker|stop|tests|reset-db|kill|health]
+# Uso direto:      ./run.sh [docker|stop|tests|reset-db|kill|health|logs|newman]
 # ═══════════════════════════════════════════════════════════════
 
 set -o pipefail
