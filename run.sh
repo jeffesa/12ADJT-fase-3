@@ -166,6 +166,32 @@ health_check() {
   done
 }
 
+run_newman() {
+  local COLLECTION="docs/api-collection/fase3-hospital.postman_collection.json"
+  info "\n📮 Rodando a collection (Newman)..."
+
+  if [ ! -f "$COLLECTION" ]; then
+    err "❌ Collection não encontrada em $COLLECTION"
+    return 1
+  fi
+
+  # Newman precisa de Node.js (usa npx, sem instalação global)
+  if ! command -v npx &>/dev/null; then
+    err "❌ Node.js/npx não encontrado. Instale o Node.js para rodar a collection via Newman."
+    return 1
+  fi
+
+  # Os serviços precisam estar no ar
+  local code
+  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8081/actuator/health" 2>/dev/null)
+  if [ "$code" != "200" ]; then
+    err "❌ scheduling-service (8081) indisponível. Suba a aplicação antes: ./run.sh docker"
+    return 1
+  fi
+
+  npx --yes newman run "$COLLECTION" --folder local
+}
+
 # ─── Menu interativo ───────────────────────────────────────────
 
 show_menu() {
@@ -180,6 +206,7 @@ show_menu() {
   echo "  5) Liberar portas (8081, 8082, 8083)"
   echo "  6) Health check dos serviços"
   echo "  7) Ver logs (Docker Compose logs -f)"
+  echo "  8) Rodar collection (Newman)"
   echo "  0) Sair"
   echo ""
   read -r -p "Escolha uma opção: " option
@@ -191,6 +218,7 @@ show_menu() {
     5) kill_all_ports ;;
     6) health_check ;;
     7) show_logs ;;
+    8) run_newman ;;
     0) echo "👋 Até mais!" && exit 0 ;;
     *) err "❌ Opção inválida." && show_menu ;;
   esac
@@ -207,7 +235,8 @@ if [ -n "$1" ]; then
     kill)        kill_all_ports ;;
     health)      health_check ;;
     logs)        show_logs ;;
-    *) echo "Uso: ./run.sh [docker|stop|tests|reset-db|kill|health|logs]" ;;
+    newman|collection) run_newman ;;
+    *) echo "Uso: ./run.sh [docker|stop|tests|reset-db|kill|health|logs|newman]" ;;
   esac
 else
   show_menu
