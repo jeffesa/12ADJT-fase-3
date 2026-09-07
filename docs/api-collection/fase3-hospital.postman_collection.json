@@ -1,0 +1,766 @@
+{
+  "info": {
+    "name": "FIAP Fase 3 - Sistema Hospitalar (Microsserviços)",
+    "description": "Collection completa dos 3 microsserviços do projeto FIAP Fase 3:\n\n- **scheduling-service** (8081): Auth JWT + CRUD de consultas\n- **notification-service** (8082): consulta de notificações (REST)\n- **history-service** (8083): histórico via GraphQL\n\nFluxo recomendado: rode a pasta **Auth** primeiro (registra DOCTOR e PATIENT e faz login capturando o token). Um pre-request no nível da collection garante auto-login caso o token esteja vazio. Em seguida rode **Scheduling**, **Notification** e **History** na ordem.\n\nRode com Newman: `newman run fase3-hospital.postman_collection.json -e fase3-local.postman_environment.json`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-login no nivel da collection: se nao houver token e ja existirem",
+          "// credenciais de DOCTOR salvas, faz login automatico antes de cada request.",
+          "const token = pm.environment.get('token') || pm.collectionVariables.get('token');",
+          "const email = pm.environment.get('doctorEmail');",
+          "const password = pm.environment.get('doctorPassword');",
+          "const base = pm.environment.get('schedulingUrl');",
+          "if (!token && email && password && base) {",
+          "  pm.sendRequest({",
+          "    url: base + '/api/v1/auth/login',",
+          "    method: 'POST',",
+          "    header: { 'Content-Type': 'application/json' },",
+          "    body: { mode: 'raw', raw: JSON.stringify({ email: email, password: password }) }",
+          "  }, function (err, res) {",
+          "    if (!err && res && res.code === 200) {",
+          "      pm.environment.set('token', res.json().token);",
+          "      console.log('[pre-request] auto-login OK, token setado');",
+          "    } else {",
+          "      console.log('[pre-request] auto-login falhou', err || res.code);",
+          "    }",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Registro e login. O login salva o token JWT na variavel de ambiente {{token}}.",
+      "item": [
+        {
+          "name": "Register DOCTOR (sucesso)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Email unico por execucao (Postgres persiste dados). Timestamp evita duplicidade.",
+                  "const ts = Date.now();",
+                  "pm.environment.set('doctorEmail', 'doctor_' + ts + '@fiap.com');",
+                  "pm.environment.set('doctorPassword', 'senha123');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const b = pm.response.json();",
+                  "pm.test('retorna token', () => pm.expect(b.token).to.be.a('string').and.not.empty);",
+                  "pm.test('retorna userId', () => pm.expect(b.userId).to.be.a('string').and.not.empty);",
+                  "pm.test('role ROLE_DOCTOR', () => pm.expect(b.role).to.eql('ROLE_DOCTOR'));",
+                  "pm.environment.set('doctorId', b.userId);",
+                  "pm.environment.set('token', b.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. House\",\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\",\n  \"role\": \"DOCTOR\"\n}"
+            },
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/auth/register",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "auth", "register" ]
+            },
+            "description": "Registra um usuario com role DOCTOR. Retorna AuthResponse com token JWT."
+          }
+        },
+        {
+          "name": "Register PATIENT (sucesso)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ts = Date.now();",
+                  "pm.environment.set('patientEmail', 'patient_' + ts + '@fiap.com');",
+                  "pm.environment.set('patientPassword', 'senha123');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const b = pm.response.json();",
+                  "pm.test('role ROLE_PATIENT', () => pm.expect(b.role).to.eql('ROLE_PATIENT'));",
+                  "pm.environment.set('patientId', b.userId);",
+                  "pm.environment.set('patientToken', b.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Patient\",\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\",\n  \"role\": \"PATIENT\"\n}"
+            },
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/auth/register",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "auth", "register" ]
+            },
+            "description": "Registra um usuario com role PATIENT."
+          }
+        },
+        {
+          "name": "Login DOCTOR (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test('token presente', () => pm.expect(b.token).to.be.a('string').and.not.empty);",
+                  "pm.environment.set('token', b.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/auth/login",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "auth", "login" ]
+            },
+            "description": "Autentica o DOCTOR e salva o token JWT em {{token}}."
+          }
+        },
+        {
+          "name": "Login credenciais invalidas (erro)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('credenciais invalidas rejeitadas', () => pm.expect(pm.response.code).to.be.oneOf([400, 401, 403, 422]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"senha-errada\"\n}"
+            },
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/auth/login",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "auth", "login" ]
+            },
+            "description": "Cenario de erro: senha incorreta deve ser rejeitada."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Scheduling",
+      "description": "CRUD de consultas. Requer token de DOCTOR/NURSE para criar/listar.",
+      "item": [
+        {
+          "name": "Create appointment (sucesso)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// dateTime deve ser futuro (validacao @Future). Usa +7 dias.",
+                  "const d = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+                  "const iso = d.toISOString().slice(0, 19);",
+                  "pm.environment.set('appointmentDateTime', iso);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "const b = pm.response.json();",
+                  "pm.test('id gerado', () => pm.expect(b.id).to.be.a('string').and.not.empty);",
+                  "pm.test('status SCHEDULED', () => pm.expect(b.status).to.eql('SCHEDULED'));",
+                  "pm.environment.set('appointmentId', b.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{appointmentDateTime}}\",\n  \"description\": \"Consulta de rotina\"\n}"
+            },
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments" ]
+            }
+          }
+        },
+        {
+          "name": "Get appointment by id (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('mesmo id', () => pm.expect(pm.response.json().id).to.eql(pm.environment.get('appointmentId')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments/{{appointmentId}}",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments", "{{appointmentId}}" ]
+            }
+          }
+        },
+        {
+          "name": "Update appointment (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('descricao atualizada', () => pm.expect(pm.response.json().description).to.eql('Consulta de retorno'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Consulta de retorno\"\n}"
+            },
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments/{{appointmentId}}",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments", "{{appointmentId}}" ]
+            }
+          }
+        },
+        {
+          "name": "List appointments (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments?status=SCHEDULED",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments" ],
+              "query": [ { "key": "status", "value": "SCHEDULED" } ]
+            }
+          }
+        },
+        {
+          "name": "List by patient (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [ "pm.test('status 200', () => pm.response.to.have.status(200));" ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments/patient/{{patientId}}",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments", "patient", "{{patientId}}" ]
+            }
+          }
+        },
+        {
+          "name": "List by doctor (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [ "pm.test('status 200', () => pm.response.to.have.status(200));" ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments/doctor/{{doctorId}}",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments", "doctor", "{{doctorId}}" ]
+            }
+          }
+        },
+        {
+          "name": "Upcoming appointments (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [ "pm.test('status 200', () => pm.response.to.have.status(200));" ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments/upcoming",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments", "upcoming" ]
+            }
+          }
+        },
+        {
+          "name": "Create appointment sem token (erro 401/403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('nao autorizado', () => pm.expect(pm.response.code).to.be.oneOf([401, 403]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{appointmentDateTime}}\",\n  \"description\": \"Sem token\"\n}"
+            },
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments" ]
+            },
+            "description": "Cenario de erro: requisicao sem Authorization deve ser bloqueada."
+          }
+        },
+        {
+          "name": "Get appointment inexistente (erro 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('nao encontrado', () => pm.expect(pm.response.code).to.be.oneOf([404, 403]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments/00000000-0000-0000-0000-000000000000",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments", "00000000-0000-0000-0000-000000000000" ]
+            },
+            "description": "Cenario de erro: id inexistente."
+          }
+        },
+        {
+          "name": "Cancel appointment (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('status CANCELLED', () => pm.expect(pm.response.json().status).to.eql('CANCELLED'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/appointments/{{appointmentId}}/cancel",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "appointments", "{{appointmentId}}", "cancel" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "Consulta de usuarios (DOCTOR/NURSE).",
+      "item": [
+        {
+          "name": "List users (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/users?role=DOCTOR",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "users" ],
+              "query": [ { "key": "role", "value": "DOCTOR" } ]
+            }
+          }
+        },
+        {
+          "name": "Get user by id (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('nao expoe senha', () => pm.expect(pm.response.json()).to.not.have.property('password'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{schedulingUrl}}/api/v1/users/{{doctorId}}",
+              "host": [ "{{schedulingUrl}}" ],
+              "path": [ "api", "v1", "users", "{{doctorId}}" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "description": "Consulta de notificacoes geradas pelos eventos de consulta (qualquer role autenticada).",
+      "item": [
+        {
+          "name": "List notifications (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{notificationUrl}}/api/v1/notifications",
+              "host": [ "{{notificationUrl}}" ],
+              "path": [ "api", "v1", "notifications" ]
+            }
+          }
+        },
+        {
+          "name": "List notifications by type (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [ "pm.test('status 200', () => pm.response.to.have.status(200));" ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "url": {
+              "raw": "{{notificationUrl}}/api/v1/notifications?type=APPOINTMENT_CREATED",
+              "host": [ "{{notificationUrl}}" ],
+              "path": [ "api", "v1", "notifications" ],
+              "query": [ { "key": "type", "value": "APPOINTMENT_CREATED" } ]
+            }
+          }
+        },
+        {
+          "name": "List notifications sem token (erro 401/403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('nao autorizado', () => pm.expect(pm.response.code).to.be.oneOf([401, 403]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notificationUrl}}/api/v1/notifications",
+              "host": [ "{{notificationUrl}}" ],
+              "path": [ "api", "v1", "notifications" ]
+            },
+            "description": "Cenario de erro: sem Authorization."
+          }
+        }
+      ]
+    },
+    {
+      "name": "History",
+      "description": "Historico de consultas via GraphQL (POST /graphql). Requer Bearer token.",
+      "item": [
+        {
+          "name": "appointmentsByPatient (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('sem erros graphql', () => pm.expect(pm.response.json()).to.not.have.property('errors'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query($patientId: ID!) {\n  appointmentsByPatient(patientId: $patientId) {\n    id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt\n  }\n}",
+                "variables": "{\n  \"patientId\": \"{{patientId}}\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{historyUrl}}/graphql",
+              "host": [ "{{historyUrl}}" ],
+              "path": [ "graphql" ]
+            }
+          }
+        },
+        {
+          "name": "appointmentsByDoctor (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [ "pm.test('status 200', () => pm.response.to.have.status(200));" ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query($doctorId: ID!) {\n  appointmentsByDoctor(doctorId: $doctorId) {\n    id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt\n  }\n}",
+                "variables": "{\n  \"doctorId\": \"{{doctorId}}\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{historyUrl}}/graphql",
+              "host": [ "{{historyUrl}}" ],
+              "path": [ "graphql" ]
+            }
+          }
+        },
+        {
+          "name": "allAppointmentHistories (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('data presente', () => pm.expect(pm.response.json().data).to.have.property('allAppointmentHistories'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query {\n  allAppointmentHistories {\n    id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt\n  }\n}",
+                "variables": "{}"
+              }
+            },
+            "url": {
+              "raw": "{{historyUrl}}/graphql",
+              "host": [ "{{historyUrl}}" ],
+              "path": [ "graphql" ]
+            }
+          }
+        },
+        {
+          "name": "upcomingAppointments (sucesso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [ "pm.test('status 200', () => pm.response.to.have.status(200));" ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query($patientId: ID!) {\n  upcomingAppointments(patientId: $patientId) {\n    id appointmentId patientId doctorId dateTime status description eventType receivedAt\n  }\n}",
+                "variables": "{\n  \"patientId\": \"{{patientId}}\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{historyUrl}}/graphql",
+              "host": [ "{{historyUrl}}" ],
+              "path": [ "graphql" ]
+            }
+          }
+        },
+        {
+          "name": "GraphQL sem token (erro)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('bloqueado (401/403)', () => pm.expect(pm.response.code).to.be.oneOf([401, 403]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query { allAppointmentHistories { id } }",
+                "variables": "{}"
+              }
+            },
+            "url": {
+              "raw": "{{historyUrl}}/graphql",
+              "host": [ "{{historyUrl}}" ],
+              "path": [ "graphql" ]
+            },
+            "description": "Cenario de erro: GraphQL sem Authorization."
+          }
+        }
+      ]
+    }
+  ]
+}
