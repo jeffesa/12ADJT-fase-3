@@ -635,7 +635,10 @@
                     "type": "text/javascript",
                     "exec": [
                       "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
-                      "pm.test('data presente', () => pm.expect(pm.response.json().data).to.have.property('allAppointmentHistories'));"
+                      "const respData = pm.response.json().data;",
+                      "pm.test('data presente', () => pm.expect(respData).to.have.property('allAppointmentHistories'));",
+                      "const list = (respData && respData.allAppointmentHistories) || [];",
+                      "if (list.length > 0) { pm.collectionVariables.set('historyId', list[0].id); }"
                     ]
                   }
                 }
@@ -649,6 +652,45 @@
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"query\": \"query { allAppointmentHistories { id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt } }\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{historyUrl}}/graphql",
+                  "host": [ "{{historyUrl}}" ],
+                  "path": [ "graphql" ]
+                }
+              }
+            },
+            {
+              "name": "appointmentHistory by id ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "const j = pm.response.json();",
+                      "const hasId = !!pm.collectionVariables.get('historyId');",
+                      "if (hasId) {",
+                      "  pm.test('sem erros graphql', () => pm.expect(j).to.not.have.property('errors'));",
+                      "  pm.test('retorna o registro solicitado', () => pm.expect(j.data.appointmentHistory).to.not.be.null);",
+                      "} else {",
+                      "  pm.test('data presente (historyId ainda nao propagado)', () => pm.expect(j).to.have.property('data'));",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json", "type": "default" },
+                  { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"query($id: ID!) { appointmentHistory(id: $id) { id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt } }\",\n  \"variables\": { \"id\": \"{{historyId}}\" }\n}",
                   "options": { "raw": { "language": "json" } }
                 },
                 "url": {
@@ -718,6 +760,7 @@
     { "key": "doctorId", "value": "", "type": "default" },
     { "key": "patientId", "value": "", "type": "default" },
     { "key": "appointmentId", "value": "", "type": "default" },
+    { "key": "historyId", "value": "", "type": "default" },
     { "key": "appointmentDateTime", "value": "", "type": "default" },
     { "key": "doctorEmail", "value": "", "type": "default" },
     { "key": "doctorPassword", "value": "", "type": "default" },
