@@ -169,7 +169,19 @@ Base: `http://localhost:8081`
 | GET | `/api/v1/appointments/{id}` | Autenticado (PATIENT só as suas) | 200 / 403 / 404 |
 | GET | `/api/v1/appointments/patient/{patientId}` | DOCTOR, NURSE ou próprio PATIENT | 200 |
 | GET | `/api/v1/appointments/doctor/{doctorId}` | DOCTOR, NURSE | 200 |
+| GET | `/api/v1/appointments` | DOCTOR, NURSE (filtro opcional `?status=`) | 200 |
 | GET | `/api/v1/appointments/upcoming` | Autenticado (filtrado por role) | 200 |
+
+> `?status=` aceita `SCHEDULED`, `CONFIRMED`, `CANCELLED`, `COMPLETED`.
+
+### Usuários (requer JWT)
+
+| Método | Rota | Acesso | Status |
+|--------|------|--------|--------|
+| GET | `/api/v1/users` | DOCTOR, NURSE (filtro opcional `?role=`) | 200 |
+| GET | `/api/v1/users/{id}` | Autenticado (PATIENT só o próprio perfil) | 200 / 403 / 404 |
+
+> `?role=` aceita `DOCTOR`, `NURSE`, `PATIENT`. A resposta nunca expõe a senha.
 
 > A documentação interativa completa (com schemas e "Try it out") está no Swagger UI: http://localhost:8081/swagger-ui.html
 >
@@ -189,6 +201,23 @@ type Query {
     appointmentsByDoctor(doctorId: ID!): [AppointmentHistory]
     upcomingAppointments(patientId: ID!): [AppointmentHistory]
     appointmentHistory(id: ID!): AppointmentHistory
+    allAppointmentHistories: [AppointmentHistory]
+}
+
+type Mutation {
+    saveAppointmentHistory(input: AppointmentHistoryInput!): AppointmentHistory
+}
+
+input AppointmentHistoryInput {
+    appointmentId: ID!
+    patientId: ID!
+    doctorId: ID!
+    patientName: String
+    doctorName: String
+    dateTime: String
+    status: String
+    description: String
+    eventType: String
 }
 
 type AppointmentHistory {
@@ -205,6 +234,8 @@ type AppointmentHistory {
     receivedAt: String
 }
 ```
+
+Controle de acesso por role (ownership aplicado nos use cases): `PATIENT` acessa apenas os próprios registros; `appointmentsByDoctor` e `allAppointmentHistories` são restritos a `DOCTOR`/`NURSE`. O histórico é populado de forma assíncrona pelos eventos RabbitMQ; a mutation `saveAppointmentHistory` existe para casos manuais/administrativos.
 
 ---
 
@@ -327,12 +358,12 @@ Os testes usam H2 em memória e não dependem de RabbitMQ/PostgreSQL (o profile 
 
 ## Status de implementação
 
-Este projeto está em desenvolvimento incremental (por sprints). Status atual por serviço:
+Status atual por serviço:
 
 | Serviço | Status |
 |---------|--------|
-| **scheduling-service** | Auth (JWT), CRUD de consultas, publicação de eventos, Swagger — implementados |
-| **notification-service** | Infraestrutura de mensageria e segurança configuradas; consumer de notificações em desenvolvimento |
-| **history-service** | Infraestrutura de mensageria, segurança e schema GraphQL configurados; consumer e resolvers em desenvolvimento |
+| **scheduling-service** | Auth (JWT), CRUD de consultas, controle de acesso por role/ownership, publicação de eventos e Swagger — implementados |
+| **notification-service** | Consumer de eventos, persistência e API REST de notificações, retry + DLQ — implementados |
+| **history-service** | Consumer de eventos, persistência em PostgreSQL, resolvers GraphQL e controle de acesso por role — implementados |
 
 Consulte o backlog completo em [`docs/planejamento/BACKLOG.md`](docs/planejamento/BACKLOG.md) e o quadro de tarefas em [GitHub Projects](https://github.com/users/jeffesa/projects/9).
