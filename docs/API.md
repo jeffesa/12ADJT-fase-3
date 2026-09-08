@@ -367,6 +367,19 @@ Response 200:
 ]
 ```
 
+Erro **422** (tipo inválido):
+
+```json
+{
+  "type": "https://api.fiap.com/errors/business",
+  "title": "Erro de negócio",
+  "status": 422,
+  "detail": "Tipo de notificação inválido: FOO",
+  "instance": "/api/v1/notifications",
+  "timestamp": "2026-09-07T12:34:56.789Z"
+}
+```
+
 ---
 
 ## history-service — GraphQL
@@ -451,6 +464,42 @@ curl -X POST http://localhost:8083/graphql \
         "dateTime": "2026-12-01T14:30:00"
       }
     ]
+  }
+}
+```
+
+### Exemplo — mutation
+
+Normalmente o histórico é populado de forma assíncrona pelos eventos do RabbitMQ. A mutation `saveAppointmentHistory` existe para inserção manual/administrativa. Além dos campos `ID!` do input, `dateTime` é obrigatório na persistência (coluna NOT NULL); os demais (`patientName`, `doctorName`, `description`) são opcionais:
+
+```bash
+curl -X POST http://localhost:8083/graphql \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{
+    "query": "mutation($input: AppointmentHistoryInput!) { saveAppointmentHistory(input: $input) { id appointmentId status eventType } }",
+    "variables": {
+      "input": {
+        "appointmentId": "59bc1125-131d-4fbf-9d1e-ffa6b7168df5",
+        "patientId": "d4aa58e0-f377-43cc-a0a2-5dde188a0061",
+        "doctorId": "34816130-ed9d-4a69-a8eb-6783311654d7",
+        "dateTime": "2026-12-01T14:30:00",
+        "status": "SCHEDULED",
+        "eventType": "CREATED"
+      }
+    }
+  }'
+```
+
+```json
+{
+  "data": {
+    "saveAppointmentHistory": {
+      "id": "5cacaaf5-97d9-4735-bd30-cbca64866041",
+      "appointmentId": "59bc1125-131d-4fbf-9d1e-ffa6b7168df5",
+      "status": "SCHEDULED",
+      "eventType": "CREATED"
+    }
   }
 }
 ```
