@@ -32,6 +32,14 @@ jobs:
             17
           cache: maven
 
+      # Cache dos pacotes do scanner SonarCloud (~/.sonar/cache) para acelerar o scan
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       # Build + testes + check de cobertura (Java 17)
       - name: Build and Test
         run: mvn -B clean verify
