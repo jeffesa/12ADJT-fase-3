@@ -48,7 +48,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c2VyQGZpYXAuY29t...
 
 Existem três roles: `PATIENT`, `DOCTOR`, `NURSE` (não há ADMIN). No corpo do `register` a role é enviada **sem** prefixo (`DOCTOR`); nas respostas ela aparece **com** prefixo interno (`ROLE_DOCTOR`).
 
-> Requisições sem token (ou com token inválido) em rotas protegidas recebem **403 Forbidden** (comportamento padrão do Spring Security, sem entry point customizado). No GraphQL, a falta de autenticação retorna HTTP 200 com um erro `UNAUTHORIZED` no array `errors`.
+> Convenção HTTP: **401 Unauthorized** para requisições **não autenticadas** (sem token, token inválido ou expirado) e **403 Forbidden** para requisições **autenticadas mas sem permissão** (role ou ownership insuficiente). No GraphQL, uma requisição HTTP sem token é barrada com **401**; negações de ownership durante o data fetching retornam HTTP 200 com erro `FORBIDDEN` no array `errors`.
 
 ---
 
@@ -59,8 +59,8 @@ Existem três roles: `PATIENT`, `DOCTOR`, `NURSE` (não há ADMIN). No corpo do 
 | 200 OK | Sucesso | GET, PUT, PATCH bem-sucedidos |
 | 201 Created | Recurso criado | `register`, criar consulta |
 | 400 Bad Request | Requisição inválida | Falha de validação de campos; query param inválido |
-| 401 Unauthorized | Não autenticado | `AuthenticationException` que chega ao controller |
-| 403 Forbidden | Sem permissão | Sem token / token inválido, ou role/ownership insuficiente |
+| 401 Unauthorized | Não autenticado | Sem token, token inválido ou expirado |
+| 403 Forbidden | Sem permissão | Autenticado, mas role ou ownership insuficiente |
 | 404 Not Found | Recurso não encontrado | ID inexistente |
 | 422 Unprocessable Entity | Regra de negócio violada | Ex.: email já cadastrado, credenciais inválidas, tipo inválido |
 | 500 Internal Server Error | Erro inesperado | Exceção não tratada |
@@ -95,6 +95,32 @@ Campos:
     "email: Email inválido",
     "password: Senha deve ter no mínimo 6 caracteres"
   ],
+  "timestamp": "2026-09-07T12:34:56.789Z"
+}
+```
+
+**401 — não autenticado** (sem token, inválido ou expirado):
+
+```json
+{
+  "type": "https://api.fiap.com/errors/unauthorized",
+  "title": "Não autenticado",
+  "status": 401,
+  "detail": "Autenticação necessária para acessar este recurso",
+  "instance": "/api/v1/appointments",
+  "timestamp": "2026-09-07T12:34:56.789Z"
+}
+```
+
+**403 — sem permissão** (autenticado, role/ownership insuficiente):
+
+```json
+{
+  "type": "https://api.fiap.com/errors/forbidden",
+  "title": "Acesso negado",
+  "status": 403,
+  "detail": "Você não tem permissão para acessar este recurso",
+  "instance": "/api/v1/appointments",
   "timestamp": "2026-09-07T12:34:56.789Z"
 }
 ```
@@ -266,7 +292,7 @@ Response 201:
 }
 ```
 
-Erros: **400** (validação), **403** (sem token / role insuficiente), **404** (paciente/médico inexistente), **422** (regra de negócio).
+Erros: **400** (validação), **401** (sem token / inválido / expirado), **403** (role insuficiente), **404** (paciente/médico inexistente), **422** (regra de negócio).
 
 ### PUT /api/v1/appointments/{id}
 

@@ -35,6 +35,6 @@ class HistoryServiceApplicationTest {
         mockMvc.perform(post("/graphql")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"query\":\"{ appointmentsByPatient(patientId: \\\"00000000-0000-0000-0000-000000000001\\\") { id } }\"}"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }
