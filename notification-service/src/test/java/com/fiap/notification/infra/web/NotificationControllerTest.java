@@ -32,7 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(NotificationController.class)
-@Import({SecurityConfig.class, JwtAuthenticationFilter.class, GlobalExceptionHandler.class})
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class, GlobalExceptionHandler.class,
+        com.fiap.notification.infra.security.RestAuthenticationEntryPoint.class,
+        com.fiap.notification.infra.security.RestAccessDeniedHandler.class})
 class NotificationControllerTest {
 
     @Autowired
@@ -85,9 +87,9 @@ class NotificationControllerTest {
     }
 
     @Test
-    @DisplayName("GET /notifications sem autenticação → 403")
-    void unauthenticatedReturns403() throws Exception {
+    @DisplayName("GET /notifications sem autenticação → 401")
+    void unauthenticatedReturns401() throws Exception {
         mockMvc.perform(get("/api/v1/notifications"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }

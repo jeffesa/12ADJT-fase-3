@@ -40,7 +40,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AppointmentController.class)
-@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class,
+        com.fiap.scheduling.infra.security.RestAuthenticationEntryPoint.class,
+        com.fiap.scheduling.infra.security.RestAccessDeniedHandler.class})
 class AppointmentControllerTest {
 
     @Autowired
@@ -82,12 +84,12 @@ class AppointmentControllerTest {
     }
 
     @Test
-    @DisplayName("POST /appointments sem autenticação → 403")
+    @DisplayName("POST /appointments sem autenticação → 401")
     void createUnauthenticated() throws Exception {
         mockMvc.perform(post("/api/v1/appointments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createBody()))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -183,10 +185,10 @@ class AppointmentControllerTest {
     }
 
     @Test
-    @DisplayName("GET /appointments/{id} sem autenticação → 403")
+    @DisplayName("GET /appointments/{id} sem autenticação → 401")
     void findByIdUnauthenticated() throws Exception {
         mockMvc.perform(get("/api/v1/appointments/" + UUID.randomUUID()))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

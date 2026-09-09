@@ -127,10 +127,10 @@ class SchedulingIntegrationTest {
     }
 
     @Test
-    @DisplayName("Integração de segurança: sem token → 403 na stack real")
-    void unauthenticatedIsForbidden() throws Exception {
+    @DisplayName("Integração de segurança: sem token → 401 na stack real")
+    void unauthenticatedIsUnauthorized() throws Exception {
         mockMvc.perform(get("/api/v1/appointments"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

@@ -30,7 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthController.class)
-@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class,
+        com.fiap.scheduling.infra.security.RestAuthenticationEntryPoint.class,
+        com.fiap.scheduling.infra.security.RestAccessDeniedHandler.class})
 class AuthControllerTest {
 
     @Autowired
