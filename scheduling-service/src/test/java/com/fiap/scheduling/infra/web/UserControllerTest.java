@@ -31,7 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class,
+        com.fiap.scheduling.infra.security.RestAuthenticationEntryPoint.class,
+        com.fiap.scheduling.infra.security.RestAccessDeniedHandler.class})
 class UserControllerTest {
 
     @Autowired
@@ -82,10 +84,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("GET /users sem autenticação → 403")
+    @DisplayName("GET /users sem autenticação → 401")
     void listUnauthenticated() throws Exception {
         mockMvc.perform(get("/api/v1/users"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

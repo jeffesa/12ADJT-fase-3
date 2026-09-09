@@ -59,6 +59,6 @@ npx newman run fase3-hospital.postman_collection.json --folder local
 
 **Sucesso:** register (DOCTOR/PATIENT), login, criar/buscar/atualizar/listar/cancelar consulta, listar por paciente e por médico, upcoming, listar usuários, listar notificações (com e sem filtro), queries GraphQL (`appointmentsByPatient`, `appointmentsByDoctor`, `allAppointmentHistories`, `appointmentHistory` por id, `upcomingAppointments`).
 
-**Erro:** login com senha inválida, criar consulta sem token, buscar consulta inexistente, notificações sem token, GraphQL sem token.
+**Erro:** login com senha inválida (422), criar consulta sem token (401), buscar consulta inexistente (404), notificações sem token (401), GraphQL sem token (401).
 
 > `notification-service` e `history-service` são populados de forma assíncrona por eventos RabbitMQ publicados pelo scheduling ao criar/atualizar consultas.

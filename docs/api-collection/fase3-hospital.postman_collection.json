@@ -394,9 +394,9 @@
               }
             },
             {
-              "name": "Create appointment sem token ❌ 401/403",
+              "name": "Create appointment sem token ❌ 401",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autorizado', () => pm.expect(pm.response.code).to.be.oneOf([401, 403]));" ] } }
+                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));" ] } }
               ],
               "request": {
                 "method": "POST",
@@ -552,9 +552,9 @@
               }
             },
             {
-              "name": "List notifications sem token ❌ 401/403",
+              "name": "List notifications sem token ❌ 401",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autorizado', () => pm.expect(pm.response.code).to.be.oneOf([401, 403]));" ] } }
+                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));" ] } }
               ],
               "request": {
                 "method": "GET",
@@ -724,9 +724,9 @@
               }
             },
             {
-              "name": "GraphQL sem token ❌ 401/403",
+              "name": "GraphQL sem token ❌ 401",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('bloqueado', () => pm.expect(pm.response.code).to.be.oneOf([401, 403]));" ] } }
+                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));" ] } }
               ],
               "request": {
                 "method": "POST",
