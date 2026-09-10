@@ -3,13 +3,13 @@ name: Branch Naming Convention
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    # Só valida nome em PRs com base develop; o PR automático develop→main (base main) não dispara
+    branches: [develop]
 
 jobs:
   validate-branch-name:
     name: Validate Branch Name
     runs-on: ubuntu-latest
-    # PR automático develop→main não precisa validar nome (develop é branch protegida)
-    if: ${{ github.head_ref != 'develop' }}
 
     steps:
       - name: Check branch name
