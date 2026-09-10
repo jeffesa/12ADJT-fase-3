@@ -414,6 +414,22 @@
               }
             },
             {
+              "name": "List appointments com token inválido ❌ 401",
+              "event": [
+                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));" ] } }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [ { "key": "Authorization", "value": "Bearer token-invalido-xyz", "type": "default" } ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments",
+                  "host": [ "{{baseUrl}}" ],
+                  "path": [ "api", "v1", "appointments" ]
+                },
+                "description": "Cenário de erro: token JWT malformado/inválido deve ser rejeitado com 401 (não autenticado)."
+              }
+            },
+            {
               "name": "Get appointment inexistente ❌ 404",
               "event": [
                 { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao encontrado', () => pm.expect(pm.response.code).to.be.oneOf([404, 403]));" ] } }
