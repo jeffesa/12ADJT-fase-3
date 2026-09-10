@@ -8,6 +8,8 @@ jobs:
   validate-branch-name:
     name: Validate Branch Name
     runs-on: ubuntu-latest
+    # PR automático develop→main não precisa validar nome (develop é branch protegida)
+    if: ${{ github.head_ref != 'develop' }}
 
     steps:
       - name: Check branch name
