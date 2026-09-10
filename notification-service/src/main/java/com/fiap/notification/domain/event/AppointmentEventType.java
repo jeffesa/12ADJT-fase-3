@@ -5,5 +5,6 @@ package com.fiap.notification.domain.event;
  */
 public enum AppointmentEventType {
     CREATED,
-    UPDATED
+    UPDATED,
+    REMINDER
 }

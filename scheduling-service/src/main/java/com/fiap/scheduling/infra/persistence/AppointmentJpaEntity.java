@@ -46,12 +46,15 @@ public class AppointmentJpaEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "reminder_sent", nullable = false)
+    private boolean reminderSent;
+
     public AppointmentJpaEntity() {
     }
 
     public AppointmentJpaEntity(UUID id, UserJpaEntity patient, UserJpaEntity doctor, LocalDateTime dateTime,
                                 AppointmentStatus status, String description, LocalDateTime createdAt,
-                                LocalDateTime updatedAt) {
+                                LocalDateTime updatedAt, boolean reminderSent) {
         this.id = id;
         this.patient = patient;
         this.doctor = doctor;
@@ -60,6 +63,7 @@ public class AppointmentJpaEntity {
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.reminderSent = reminderSent;
     }
 
     public static AppointmentJpaEntity fromDomain(Appointment appointment, UserJpaEntity patient, UserJpaEntity doctor) {
@@ -71,7 +75,8 @@ public class AppointmentJpaEntity {
                 appointment.getStatus(),
                 appointment.getDescription(),
                 appointment.getCreatedAt(),
-                appointment.getUpdatedAt()
+                appointment.getUpdatedAt(),
+                appointment.isReminderSent()
         );
     }
 
@@ -84,7 +89,8 @@ public class AppointmentJpaEntity {
                 status,
                 description,
                 createdAt,
-                updatedAt
+                updatedAt,
+                reminderSent
         );
     }
 }

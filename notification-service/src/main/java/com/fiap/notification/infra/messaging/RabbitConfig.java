@@ -33,6 +33,7 @@ public class RabbitConfig {
     // Routing Keys
     public static final String ROUTING_KEY_CREATED = "appointment.created";
     public static final String ROUTING_KEY_UPDATED = "appointment.updated";
+    public static final String ROUTING_KEY_REMINDER = "appointment.reminder";
 
     // Concurrency
     private static final int CONCURRENT_CONSUMERS = 2;
@@ -86,6 +87,13 @@ public class RabbitConfig {
         return BindingBuilder.bind(notificationQueue)
                 .to(appointmentExchange)
                 .with(ROUTING_KEY_UPDATED);
+    }
+
+    @Bean
+    public Binding notificationReminderBinding(Queue notificationQueue, TopicExchange appointmentExchange) {
+        return BindingBuilder.bind(notificationQueue)
+                .to(appointmentExchange)
+                .with(ROUTING_KEY_REMINDER);
     }
 
     // ═══════════════════════════════════════

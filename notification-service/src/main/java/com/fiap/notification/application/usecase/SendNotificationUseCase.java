@@ -55,6 +55,7 @@ public class SendNotificationUseCase implements ProcessAppointmentEventUseCase {
         return switch (eventType) {
             case CREATED -> NotificationType.APPOINTMENT_CREATED;
             case UPDATED -> NotificationType.APPOINTMENT_UPDATED;
+            case REMINDER -> NotificationType.APPOINTMENT_REMINDER;
         };
     }
 
@@ -67,10 +68,15 @@ public class SendNotificationUseCase implements ProcessAppointmentEventUseCase {
     }
 
     private String buildBody(AppointmentEvent event, NotificationType type) {
+        if (type == NotificationType.APPOINTMENT_REMINDER) {
+            return String.format(
+                    "Lembrete: você tem uma consulta (id %s) com o médico %s em %s. Status atual: %s.",
+                    event.appointmentId(), event.doctorId(), event.dateTime(), event.status());
+        }
         String acao = switch (type) {
             case APPOINTMENT_CREATED -> "agendada";
             case APPOINTMENT_UPDATED -> "atualizada";
-            case APPOINTMENT_REMINDER -> "lembrada";
+            case APPOINTMENT_REMINDER -> "lembrada"; // inalcançável (tratado acima), mantém o switch exaustivo
         };
         return String.format(
                 "Sua consulta (id %s) com o médico %s foi %s para %s. Status atual: %s.",

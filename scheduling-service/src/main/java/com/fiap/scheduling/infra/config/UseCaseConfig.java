@@ -11,6 +11,7 @@ import com.fiap.scheduling.application.usecase.FindUpcomingAppointmentsUseCase;
 import com.fiap.scheduling.application.usecase.FindUserByIdUseCase;
 import com.fiap.scheduling.application.usecase.LoginUseCase;
 import com.fiap.scheduling.application.usecase.RegisterUserUseCase;
+import com.fiap.scheduling.application.usecase.SendAppointmentRemindersUseCase;
 import com.fiap.scheduling.application.usecase.UpdateAppointmentUseCase;
 import com.fiap.scheduling.domain.event.EventPublisher;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
@@ -111,5 +112,13 @@ public class UseCaseConfig {
     @Bean
     public FindAllAppointmentsUseCase findAllAppointmentsUseCase(AppointmentGateway appointmentGateway) {
         return new FindAllAppointmentsUseCase(appointmentGateway);
+    }
+
+    @Bean
+    public SendAppointmentRemindersUseCase sendAppointmentRemindersUseCase(
+            AppointmentGateway appointmentGateway,
+            EventPublisher eventPublisher,
+            @org.springframework.beans.factory.annotation.Value("${app.reminder.window-hours:24}") long windowHours) {
+        return new SendAppointmentRemindersUseCase(appointmentGateway, eventPublisher, windowHours);
     }
 }
