@@ -11,6 +11,9 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-latest
+    # Evita rodar duas vezes no PR automático develop→main (o CI já roda no push
+    # de develop e de main). Pula apenas quando a head do PR é a develop.
+    if: ${{ github.event_name != 'pull_request' || github.head_ref != 'develop' }}
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
