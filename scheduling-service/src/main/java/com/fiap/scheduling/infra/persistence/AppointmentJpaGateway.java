@@ -1,6 +1,7 @@
 package com.fiap.scheduling.infra.persistence;
 
 import com.fiap.scheduling.domain.entity.Appointment;
+import com.fiap.scheduling.domain.entity.AppointmentStatus;
 import com.fiap.scheduling.domain.gateway.AppointmentGateway;
 import org.springframework.stereotype.Component;
 
@@ -73,6 +74,14 @@ public class AppointmentJpaGateway implements AppointmentGateway {
     @Override
     public List<Appointment> findUpcoming(LocalDateTime fromDateTime) {
         return appointmentRepository.findByDateTimeAfter(fromDateTime).stream()
+                .map(AppointmentJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Appointment> findRemindableWithin(LocalDateTime start, LocalDateTime end) {
+        return appointmentRepository.findByStatusInAndDateTimeBetweenAndReminderSentFalse(
+                        List.of(AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED), start, end).stream()
                 .map(AppointmentJpaEntity::toDomain)
                 .toList();
     }

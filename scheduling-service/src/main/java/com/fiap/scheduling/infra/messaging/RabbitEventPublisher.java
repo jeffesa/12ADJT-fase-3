@@ -17,6 +17,7 @@ public class RabbitEventPublisher implements EventPublisher {
         String routingKey = switch (event.eventType()) {
             case CREATED -> RabbitConfig.ROUTING_KEY_CREATED;
             case UPDATED -> RabbitConfig.ROUTING_KEY_UPDATED;
+            case REMINDER -> RabbitConfig.ROUTING_KEY_REMINDER;
         };
 
         rabbitTemplate.convertAndSend(RabbitConfig.APPOINTMENT_EXCHANGE, routingKey, event);
