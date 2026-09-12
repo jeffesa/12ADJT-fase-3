@@ -39,4 +39,16 @@ public record AppointmentEvent(
                 AppointmentEventType.UPDATED
         );
     }
+
+    public static AppointmentEvent reminder(Appointment appointment) {
+        return new AppointmentEvent(
+                appointment.getId(),
+                appointment.getPatientId(),
+                appointment.getDoctorId(),
+                appointment.getDateTime(),
+                appointment.getStatus(),
+                appointment.getDescription(),
+                AppointmentEventType.REMINDER
+        );
+    }
 }

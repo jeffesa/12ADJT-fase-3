@@ -30,4 +30,10 @@ public interface AppointmentGateway {
     List<Appointment> findByDateRange(LocalDateTime start, LocalDateTime end);
 
     List<Appointment> findUpcoming(LocalDateTime fromDateTime);
+
+    /**
+     * Consultas elegíveis a lembrete (SCHEDULED/CONFIRMED) com dateTime na janela
+     * [start, end] e que ainda não tiveram lembrete enviado.
+     */
+    List<Appointment> findRemindableWithin(LocalDateTime start, LocalDateTime end);
 }

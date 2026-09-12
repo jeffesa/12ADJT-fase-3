@@ -17,6 +17,7 @@ public class Appointment {
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean reminderSent;
 
     public Appointment() {
     }
@@ -24,6 +25,12 @@ public class Appointment {
     public Appointment(UUID id, UUID patientId, UUID doctorId, LocalDateTime dateTime,
                        AppointmentStatus status, String description,
                        LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, patientId, doctorId, dateTime, status, description, createdAt, updatedAt, false);
+    }
+
+    public Appointment(UUID id, UUID patientId, UUID doctorId, LocalDateTime dateTime,
+                       AppointmentStatus status, String description,
+                       LocalDateTime createdAt, LocalDateTime updatedAt, boolean reminderSent) {
         this.id = id;
         this.patientId = patientId;
         this.doctorId = doctorId;
@@ -32,6 +39,7 @@ public class Appointment {
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.reminderSent = reminderSent;
     }
 
     public static Appointment create(UUID patientId, UUID doctorId, LocalDateTime dateTime, String description) {
@@ -193,5 +201,19 @@ public class Appointment {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isReminderSent() {
+        return reminderSent;
+    }
+
+    public void setReminderSent(boolean reminderSent) {
+        this.reminderSent = reminderSent;
+    }
+
+    /** Marca que o lembrete desta consulta já foi enviado (evita duplicidade). */
+    public void markReminderSent() {
+        this.reminderSent = true;
+        this.updatedAt = LocalDateTime.now();
     }
 }

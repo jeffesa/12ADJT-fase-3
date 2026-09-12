@@ -36,6 +36,7 @@ public class RabbitConfig {
     // Routing Keys
     public static final String ROUTING_KEY_CREATED = "appointment.created";
     public static final String ROUTING_KEY_UPDATED = "appointment.updated";
+    public static final String ROUTING_KEY_REMINDER = "appointment.reminder";
 
     // DLQ TTL (24 horas em milissegundos)
     private static final int DLQ_TTL = 86_400_000;
@@ -103,6 +104,13 @@ public class RabbitConfig {
         return BindingBuilder.bind(notificationQueue)
                 .to(appointmentExchange)
                 .with(ROUTING_KEY_UPDATED);
+    }
+
+    @Bean
+    public Binding notificationReminderBinding(Queue notificationQueue, TopicExchange appointmentExchange) {
+        return BindingBuilder.bind(notificationQueue)
+                .to(appointmentExchange)
+                .with(ROUTING_KEY_REMINDER);
     }
 
     // ═══════════════════════════════════════

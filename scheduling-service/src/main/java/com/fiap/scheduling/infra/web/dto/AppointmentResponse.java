@@ -18,7 +18,8 @@ public record AppointmentResponse(
         String status,
         String description,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        boolean reminderSent
 ) {
 
     public static AppointmentResponse fromDomain(Appointment appointment) {
@@ -30,7 +31,8 @@ public record AppointmentResponse(
                 appointment.getStatus().name(),
                 appointment.getDescription(),
                 appointment.getCreatedAt(),
-                appointment.getUpdatedAt()
+                appointment.getUpdatedAt(),
+                appointment.isReminderSent()
         );
     }
 }
