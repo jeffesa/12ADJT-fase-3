@@ -60,6 +60,11 @@ public class SecurityConfig {
                         // Appointments - cancelamento: DOCTOR, NURSE ou PATIENT (ownership no use case)
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/appointments/*/cancel")
                         .hasAnyRole("DOCTOR", "NURSE", "PATIENT")
+                        // Appointments - confirmar/concluir: DOCTOR e NURSE
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/appointments/*/confirm")
+                        .hasAnyRole("DOCTOR", "NURSE")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/appointments/*/complete")
+                        .hasAnyRole("DOCTOR", "NURSE")
                         // Appointments - listar TODAS: DOCTOR e NURSE
                         .requestMatchers(HttpMethod.GET, "/api/v1/appointments").hasAnyRole("DOCTOR", "NURSE")
                         // Appointments - listar por médico: DOCTOR e NURSE
