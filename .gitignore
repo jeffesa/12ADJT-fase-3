@@ -33,3 +33,12 @@ docker-compose.override.yml
 
 # Spring
 *.pid
+
+# AI assistants / tooling
+.kiro/
+.amazonq/
+.cursor/
+.aider*
+.continue/
+.claude/
+.github/copilot-instructions.md
