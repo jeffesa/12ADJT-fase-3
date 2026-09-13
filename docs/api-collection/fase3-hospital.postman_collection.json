@@ -290,6 +290,143 @@
                   ]
                 }
               }
+            },
+            {
+              "name": "Register email duplicado ❌ 422",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 422', () => pm.expect(pm.response.code).to.equal(422));",
+                      "pm.test('type business', () => pm.expect(pm.response.json().type).to.include('business'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Duplicado\",\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"senha123\",\n  \"role\": \"DOCTOR\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Register body invalido ❌ 400",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 400', () => pm.expect(pm.response.code).to.equal(400));",
+                      "pm.test('type validation', () => pm.expect(pm.response.json().type).to.include('validation'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"\",\n  \"email\": \"invalido\",\n  \"password\": \"123\",\n  \"role\": \"DOCTOR\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Register role invalida ❌ 400",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 400', () => pm.expect(pm.response.code).to.equal(400));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Fulano\",\n  \"email\": \"roleinvalida@fiap.com\",\n  \"password\": \"senha123\",\n  \"role\": \"ADMIN\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              }
             }
           ]
         },
@@ -1120,6 +1257,322 @@
                   }
                 }
               ]
+            },
+            {
+              "name": "List all (sem filtro) ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List all status=CONFIRMED ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                      "pm.test('todos CONFIRMED', () => pm.response.json().forEach(a => pm.expect(a.status).to.eql('CONFIRMED')));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments?status=CONFIRMED",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "CONFIRMED"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List all status=CANCELLED ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                      "pm.test('todos CANCELLED', () => pm.response.json().forEach(a => pm.expect(a.status).to.eql('CANCELLED')));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments?status=CANCELLED",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "CANCELLED"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List all status=COMPLETED ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                      "pm.test('todos COMPLETED', () => pm.response.json().forEach(a => pm.expect(a.status).to.eql('COMPLETED')));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments?status=COMPLETED",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "COMPLETED"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List all status invalido ❌ 400",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 400', () => pm.expect(pm.response.code).to.equal(400));",
+                      "pm.test('type validation/bad-request', () => pm.expect(pm.response.json().type).to.match(/validation|bad-request/));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments?status=ALGUMA_ACTION",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "ALGUMA_ACTION"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List all como PATIENT ❌ 403",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 403', () => pm.expect(pm.response.code).to.equal(403));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List by patient (outro paciente) como PATIENT ❌ 403",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 403', () => pm.expect(pm.response.code).to.equal(403));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments/patient/{{doctorId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "patient",
+                    "{{doctorId}}"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List by doctor como PATIENT ❌ 403",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 403', () => pm.expect(pm.response.code).to.equal(403));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments/doctor/{{doctorId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "doctor",
+                    "{{doctorId}}"
+                  ]
+                }
+              }
             }
           ]
         },
@@ -1188,6 +1641,275 @@
                   {
                     "key": "Authorization",
                     "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/{{doctorId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "{{doctorId}}"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List users (sem filtro) ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List users role=NURSE ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users?role=NURSE",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "NURSE"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List users role=PATIENT ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users?role=PATIENT",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "PATIENT"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List users role invalida ❌ 400",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 400', () => pm.expect(pm.response.code).to.equal(400));",
+                      "pm.test('type validation/bad-request', () => pm.expect(pm.response.json().type).to.match(/validation|bad-request/));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users?role=SUPERADMIN",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "SUPERADMIN"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List users como PATIENT ❌ 403",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 403', () => pm.expect(pm.response.code).to.equal(403));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get user by id inexistente ❌ 404",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 404', () => pm.expect(pm.response.code).to.equal(404));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/00000000-0000-0000-0000-000000000000",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "00000000-0000-0000-0000-000000000000"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get user (outro user) como PATIENT ❌ 403",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 403', () => pm.expect(pm.response.code).to.equal(403));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}",
                     "type": "default"
                   }
                 ],
@@ -1312,6 +2034,89 @@
                     "api",
                     "v1",
                     "notifications"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List notifications tipo invalido ❌ 422",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 422', () => pm.expect(pm.response.code).to.equal(422));",
+                      "pm.test('type business', () => pm.expect(pm.response.json().type).to.include('business'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{notificationUrl}}/api/v1/notifications?type=TIPO_INEXISTENTE",
+                  "host": [
+                    "{{notificationUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "notifications"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "TIPO_INEXISTENTE"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List notifications by type REMINDER ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{notificationUrl}}/api/v1/notifications?type=APPOINTMENT_REMINDER",
+                  "host": [
+                    "{{notificationUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "notifications"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "APPOINTMENT_REMINDER"
+                    }
                   ]
                 }
               }
