@@ -199,6 +199,66 @@
               }
             },
             {
+              "name": "Register NURSE ✅ 201",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const ts = Date.now();",
+                      "pm.collectionVariables.set('nurseEmail', 'nurse_' + ts + '@fiap.com.br');",
+                      "pm.collectionVariables.set('nursePassword', 'senha123');"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 201', () => pm.expect(pm.response.code).to.equal(201));",
+                      "const b = pm.response.json();",
+                      "pm.test('role ROLE_NURSE', () => pm.expect(b.role).to.eql('ROLE_NURSE'));",
+                      "pm.collectionVariables.set('nurseId', b.userId);",
+                      "pm.collectionVariables.set('nurseToken', b.token);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Joana Nurse\",\n  \"email\": \"{{nurseEmail}}\",\n  \"password\": \"{{nursePassword}}\",\n  \"role\": \"NURSE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              }
+            },
+            {
               "name": "Login DOCTOR ✅ 200",
               "event": [
                 {
@@ -1255,6 +1315,402 @@
                       ]
                     }
                   }
+                },
+                {
+                  "name": "8. Create (fica CONFIRMED) ✅ 201",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "const d = new Date(Date.now() + 7*24*60*60*1000);",
+                          "pm.collectionVariables.set('statusFlowDateTime', d.toISOString().slice(0,19));"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 201', () => pm.expect(pm.response.code).to.equal(201));",
+                          "const b = pm.response.json();",
+                          "pm.collectionVariables.set('confirmedId', b.id);"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{statusFlowDateTime}}\",\n  \"description\": \"Cenario status\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "9. Confirm (permanece CONFIRMED) ✅ 200",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                          "pm.test('status CONFIRMED', () => pm.expect(pm.response.json().status).to.eql('CONFIRMED'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{confirmedId}}/confirm",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{confirmedId}}",
+                        "confirm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "10. Create para NURSE confirmar ✅ 201",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "const d = new Date(Date.now() + 7*24*60*60*1000);",
+                          "pm.collectionVariables.set('statusFlowDateTime', d.toISOString().slice(0,19));"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 201', () => pm.expect(pm.response.code).to.equal(201));",
+                          "const b = pm.response.json();",
+                          "pm.collectionVariables.set('nurseApptId', b.id);"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{statusFlowDateTime}}\",\n  \"description\": \"Cenario status\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "11. Confirm como NURSE ✅ 200",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                          "pm.test('status CONFIRMED', () => pm.expect(pm.response.json().status).to.eql('CONFIRMED'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{nurseToken}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{nurseApptId}}/confirm",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{nurseApptId}}",
+                        "confirm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "12. Create para cancelar ✅ 201",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "const d = new Date(Date.now() + 7*24*60*60*1000);",
+                          "pm.collectionVariables.set('statusFlowDateTime', d.toISOString().slice(0,19));"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 201', () => pm.expect(pm.response.code).to.equal(201));",
+                          "const b = pm.response.json();",
+                          "pm.collectionVariables.set('cancelId', b.id);"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{statusFlowDateTime}}\",\n  \"description\": \"Cenario status\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "13. Cancel (fica CANCELLED) ✅ 200",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                          "pm.test('status CANCELLED', () => pm.expect(pm.response.json().status).to.eql('CANCELLED'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{cancelId}}/cancel",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{cancelId}}",
+                        "cancel"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "14. Create para PATIENT cancelar ✅ 201",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "const d = new Date(Date.now() + 7*24*60*60*1000);",
+                          "pm.collectionVariables.set('statusFlowDateTime', d.toISOString().slice(0,19));"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 201', () => pm.expect(pm.response.code).to.equal(201));",
+                          "const b = pm.response.json();",
+                          "pm.collectionVariables.set('patientCancelId', b.id);"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{statusFlowDateTime}}\",\n  \"description\": \"Cenario status\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "15. Cancel pela PROPRIA PATIENT ✅ 200",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                          "pm.test('status CANCELLED', () => pm.expect(pm.response.json().status).to.eql('CANCELLED'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{patientToken}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{patientCancelId}}/cancel",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{patientCancelId}}",
+                        "cancel"
+                      ]
+                    }
+                  }
                 }
               ]
             },
@@ -1570,6 +2026,71 @@
                     "appointments",
                     "doctor",
                     "{{doctorId}}"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create appointment em 24h (gera lembrete) ✅ 201",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// dateTime dentro da janela de 24h do scheduler de lembretes",
+                      "const d = new Date(Date.now() + 3*60*60*1000);",
+                      "pm.collectionVariables.set('reminderDateTime', d.toISOString().slice(0,19));"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 201', () => pm.expect(pm.response.code).to.equal(201));",
+                      "const b = pm.response.json();",
+                      "pm.test('reminderSent inicia false', () => pm.expect(b.reminderSent).to.eql(false));",
+                      "pm.collectionVariables.set('reminderApptId', b.id);",
+                      "// O scheduler roda periodicamente e enviara o lembrete de forma assincrona;",
+                      "// verifique depois em Notification > List notifications by type REMINDER."
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{reminderDateTime}}\",\n  \"description\": \"Consulta em 24h (gera lembrete)\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/appointments",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
                   ]
                 }
               }
@@ -1923,6 +2444,123 @@
                     "v1",
                     "users",
                     "{{doctorId}}"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List users role=DOCTOR ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                      "pm.test('tem ao menos 1 doctor', () => pm.expect(pm.response.json().length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users?role=DOCTOR",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "DOCTOR"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get user by id (NURSE) ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('role ROLE_NURSE', () => pm.expect(pm.response.json().role).to.eql('ROLE_NURSE'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/{{nurseId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "{{nurseId}}"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get proprio perfil como PATIENT ✅ 200",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                      "pm.test('role ROLE_PATIENT', () => pm.expect(pm.response.json().role).to.eql('ROLE_PATIENT'));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{patientToken}}",
+                    "type": "default"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/users/{{patientId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "{{patientId}}"
                   ]
                 }
               }
@@ -2517,6 +3155,46 @@
     },
     {
       "key": "statusFlowDateTime",
+      "value": ""
+    },
+    {
+      "key": "nurseId",
+      "value": ""
+    },
+    {
+      "key": "nurseToken",
+      "value": ""
+    },
+    {
+      "key": "nurseEmail",
+      "value": ""
+    },
+    {
+      "key": "nursePassword",
+      "value": ""
+    },
+    {
+      "key": "confirmedId",
+      "value": ""
+    },
+    {
+      "key": "nurseApptId",
+      "value": ""
+    },
+    {
+      "key": "cancelId",
+      "value": ""
+    },
+    {
+      "key": "patientCancelId",
+      "value": ""
+    },
+    {
+      "key": "reminderApptId",
+      "value": ""
+    },
+    {
+      "key": "reminderDateTime",
       "value": ""
     }
   ]
