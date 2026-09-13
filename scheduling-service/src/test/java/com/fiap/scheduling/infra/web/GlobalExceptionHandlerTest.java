@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 
@@ -67,6 +68,15 @@ class GlobalExceptionHandlerTest {
         ProblemDetail pd = handler.handleIllegalArgument(new IllegalArgumentException("arg ruim"));
         assertEquals(HttpStatus.BAD_REQUEST.value(), pd.getStatus());
         assertEquals("arg ruim", pd.getDetail());
+    }
+
+    @Test
+    @DisplayName("HttpMessageNotReadableException (enum inválido no JSON) → 400")
+    void notReadable() {
+        ProblemDetail pd = handler.handleNotReadable(
+                new HttpMessageNotReadableException("JSON parse error", (org.springframework.http.HttpInputMessage) null));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), pd.getStatus());
+        assertNotNull(pd.getDetail());
     }
 
     @Test

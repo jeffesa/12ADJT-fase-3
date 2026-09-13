@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -110,6 +111,18 @@ public class GlobalExceptionHandler {
         problem.setProperty("timestamp", Instant.now());
 
         log.warn("Argumento inválido: {}", ex.getMessage());
+        return problem;
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleNotReadable(HttpMessageNotReadableException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle("Requisição inválida");
+        problem.setDetail("Corpo da requisição inválido ou com valor não aceito (ex.: enum inexistente).");
+        problem.setType(URI.create("https://api.fiap.com/errors/bad-request"));
+        problem.setProperty("timestamp", Instant.now());
+
+        log.warn("Corpo da requisição não pôde ser lido: {}", ex.getMessage());
         return problem;
     }
 
