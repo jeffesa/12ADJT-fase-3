@@ -63,8 +63,13 @@
             "header": [],
             "url": {
               "raw": "{{localScheduling}}/actuator/health",
-              "host": [ "{{localScheduling}}" ],
-              "path": [ "actuator", "health" ]
+              "host": [
+                "{{localScheduling}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
             },
             "description": "Rode este request primeiro para apontar as variáveis para o ambiente local."
           }
@@ -103,16 +108,33 @@
               ],
               "request": {
                 "method": "POST",
-                "header": [ { "key": "Content-Type", "value": "application/json", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"name\": \"Dr. House\",\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\",\n  \"role\": \"DOCTOR\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/auth/register",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "auth", "register" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
                 }
               }
             },
@@ -146,16 +168,33 @@
               ],
               "request": {
                 "method": "POST",
-                "header": [ { "key": "Content-Type", "value": "application/json", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"name\": \"John Patient\",\n  \"email\": \"{{patientEmail}}\",\n  \"password\": \"{{patientPassword}}\",\n  \"role\": \"PATIENT\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/auth/register",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "auth", "register" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
                 }
               }
             },
@@ -177,16 +216,33 @@
               ],
               "request": {
                 "method": "POST",
-                "header": [ { "key": "Content-Type", "value": "application/json", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"{{doctorPassword}}\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/auth/login",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "auth", "login" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
                 }
               }
             },
@@ -205,16 +261,33 @@
               ],
               "request": {
                 "method": "POST",
-                "header": [ { "key": "Content-Type", "value": "application/json", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"email\": \"{{doctorEmail}}\",\n  \"password\": \"senha-errada\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/auth/login",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "auth", "login" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
                 }
               }
             }
@@ -252,18 +325,36 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json", "type": "default" },
-                  { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" }
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
                 ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{appointmentDateTime}}\",\n  \"description\": \"Consulta de rotina\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ]
                 }
               }
             },
@@ -283,11 +374,24 @@
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments", "{{appointmentId}}" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "{{appointmentId}}"
+                  ]
                 }
               }
             },
@@ -308,18 +412,37 @@
               "request": {
                 "method": "PUT",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json", "type": "default" },
-                  { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" }
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
                 ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"description\": \"Consulta de retorno\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments", "{{appointmentId}}" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "{{appointmentId}}"
+                  ]
                 }
               }
             },
@@ -339,92 +462,218 @@
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments?status=SCHEDULED",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments" ],
-                  "query": [ { "key": "status", "value": "SCHEDULED" } ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "SCHEDULED"
+                    }
+                  ]
                 }
               }
             },
             {
               "name": "List by patient ✅ 200",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments/patient/{{patientId}}",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments", "patient", "{{patientId}}" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "patient",
+                    "{{patientId}}"
+                  ]
                 }
               }
             },
             {
               "name": "List by doctor ✅ 200",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments/doctor/{{doctorId}}",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments", "doctor", "{{doctorId}}" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "doctor",
+                    "{{doctorId}}"
+                  ]
                 }
               }
             },
             {
               "name": "Upcoming appointments ✅ 200",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments/upcoming",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments", "upcoming" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "upcoming"
+                  ]
                 }
               }
             },
             {
               "name": "Create appointment sem token ❌ 401",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "POST",
-                "header": [ { "key": "Content-Type", "value": "application/json", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{appointmentDateTime}}\",\n  \"description\": \"Sem token\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ]
                 }
               }
             },
             {
               "name": "List appointments com token inválido ❌ 401",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer token-invalido-xyz", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer token-invalido-xyz",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments"
+                  ]
                 },
                 "description": "Cenário de erro: token JWT malformado/inválido deve ser rejeitado com 401 (não autenticado)."
               }
@@ -432,15 +681,36 @@
             {
               "name": "Get appointment inexistente ❌ 404",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao encontrado', () => pm.expect(pm.response.code).to.be.oneOf([404, 403]));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('nao encontrado', () => pm.expect(pm.response.code).to.be.oneOf([404, 403]));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments/00000000-0000-0000-0000-000000000000",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments", "00000000-0000-0000-0000-000000000000" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "00000000-0000-0000-0000-000000000000"
+                  ]
                 }
               }
             },
@@ -460,13 +730,396 @@
               ],
               "request": {
                 "method": "PATCH",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/cancel",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "appointments", "{{appointmentId}}", "cancel" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "appointments",
+                    "{{appointmentId}}",
+                    "cancel"
+                  ]
                 }
               }
+            },
+            {
+              "name": "Status Flow (confirm/complete)",
+              "item": [
+                {
+                  "name": "1. Create (fluxo status) ✅ 201",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "const d = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+                          "pm.collectionVariables.set('statusFlowDateTime', d.toISOString().slice(0, 19));"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 201', () => pm.expect(pm.response.code).to.equal(201));",
+                          "const b = pm.response.json();",
+                          "pm.test('status SCHEDULED', () => pm.expect(b.status).to.eql('SCHEDULED'));",
+                          "pm.collectionVariables.set('statusFlowId', b.id);"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{statusFlowDateTime}}\",\n  \"description\": \"Fluxo de status\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "2. Confirm appointment ✅ 200",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                          "pm.test('status CONFIRMED', () => pm.expect(pm.response.json().status).to.eql('CONFIRMED'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{statusFlowId}}/confirm",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{statusFlowId}}",
+                        "confirm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "3. Complete appointment ✅ 200",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));",
+                          "pm.test('status COMPLETED', () => pm.expect(pm.response.json().status).to.eql('COMPLETED'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{statusFlowId}}/complete",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{statusFlowId}}",
+                        "complete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "4. Confirm consulta COMPLETED ❌ 422",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Regra de negocio 422', () => pm.expect(pm.response.code).to.equal(422));",
+                          "pm.test('type business', () => pm.expect(pm.response.json().type).to.include('business'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{statusFlowId}}/confirm",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{statusFlowId}}",
+                        "confirm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "5a. Create para erro complete ✅ 201",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "const d = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+                          "pm.collectionVariables.set('statusFlowDateTime', d.toISOString().slice(0, 19));"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Status code is 201', () => pm.expect(pm.response.code).to.equal(201));",
+                          "const b = pm.response.json();",
+                          "pm.test('status SCHEDULED', () => pm.expect(b.status).to.eql('SCHEDULED'));",
+                          "pm.collectionVariables.set('statusErrId', b.id);"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"doctorId\": \"{{doctorId}}\",\n  \"dateTime\": \"{{statusFlowDateTime}}\",\n  \"description\": \"Fluxo de status\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "5b. Complete sem CONFIRM ❌ 422",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Regra de negocio 422', () => pm.expect(pm.response.code).to.equal(422));",
+                          "pm.test('type business', () => pm.expect(pm.response.json().type).to.include('business'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{statusErrId}}/complete",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{statusErrId}}",
+                        "complete"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "6. Confirm como PATIENT ❌ 403",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Sem permissao 403', () => pm.expect(pm.response.code).to.equal(403));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{patientToken}}",
+                        "type": "default"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{statusErrId}}/confirm",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{statusErrId}}",
+                        "confirm"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "7. Update consulta COMPLETED ❌ 422",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test('Regra de negocio 422', () => pm.expect(pm.response.code).to.equal(422));",
+                          "pm.test('type business', () => pm.expect(pm.response.json().type).to.include('business'));"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "default"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "default"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"description\": \"tentativa invalida\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/v1/appointments/{{statusFlowId}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "appointments",
+                        "{{statusFlowId}}"
+                      ]
+                    }
+                  }
+                }
+              ]
             }
           ]
         },
@@ -489,12 +1142,29 @@
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/users?role=DOCTOR",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "users" ],
-                  "query": [ { "key": "role", "value": "DOCTOR" } ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "DOCTOR"
+                    }
+                  ]
                 }
               }
             },
@@ -514,11 +1184,24 @@
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{baseUrl}}/api/v1/users/{{doctorId}}",
-                  "host": [ "{{baseUrl}}" ],
-                  "path": [ "api", "v1", "users", "{{doctorId}}" ]
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "{{doctorId}}"
+                  ]
                 }
               }
             }
@@ -543,42 +1226,93 @@
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{notificationUrl}}/api/v1/notifications",
-                  "host": [ "{{notificationUrl}}" ],
-                  "path": [ "api", "v1", "notifications" ]
+                  "host": [
+                    "{{notificationUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "notifications"
+                  ]
                 }
               }
             },
             {
               "name": "List notifications by type ✅ 200",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "GET",
-                "header": [ { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
+                ],
                 "url": {
                   "raw": "{{notificationUrl}}/api/v1/notifications?type=APPOINTMENT_CREATED",
-                  "host": [ "{{notificationUrl}}" ],
-                  "path": [ "api", "v1", "notifications" ],
-                  "query": [ { "key": "type", "value": "APPOINTMENT_CREATED" } ]
+                  "host": [
+                    "{{notificationUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "notifications"
+                  ],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "APPOINTMENT_CREATED"
+                    }
+                  ]
                 }
               }
             },
             {
               "name": "List notifications sem token ❌ 401",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "GET",
                 "header": [],
                 "url": {
                   "raw": "{{notificationUrl}}/api/v1/notifications",
-                  "host": [ "{{notificationUrl}}" ],
-                  "path": [ "api", "v1", "notifications" ]
+                  "host": [
+                    "{{notificationUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "notifications"
+                  ]
                 }
               }
             }
@@ -604,41 +1338,81 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json", "type": "default" },
-                  { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" }
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
                 ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"query\": \"query($patientId: ID!) { appointmentsByPatient(patientId: $patientId) { id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt } }\",\n  \"variables\": { \"patientId\": \"{{patientId}}\" }\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{historyUrl}}/graphql",
-                  "host": [ "{{historyUrl}}" ],
-                  "path": [ "graphql" ]
+                  "host": [
+                    "{{historyUrl}}"
+                  ],
+                  "path": [
+                    "graphql"
+                  ]
                 }
               }
             },
             {
               "name": "appointmentsByDoctor ✅ 200",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json", "type": "default" },
-                  { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" }
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
                 ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"query\": \"query($doctorId: ID!) { appointmentsByDoctor(doctorId: $doctorId) { id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt } }\",\n  \"variables\": { \"doctorId\": \"{{doctorId}}\" }\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{historyUrl}}/graphql",
-                  "host": [ "{{historyUrl}}" ],
-                  "path": [ "graphql" ]
+                  "host": [
+                    "{{historyUrl}}"
+                  ],
+                  "path": [
+                    "graphql"
+                  ]
                 }
               }
             },
@@ -662,18 +1436,34 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json", "type": "default" },
-                  { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" }
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
                 ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"query\": \"query { allAppointmentHistories { id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt } }\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{historyUrl}}/graphql",
-                  "host": [ "{{historyUrl}}" ],
-                  "path": [ "graphql" ]
+                  "host": [
+                    "{{historyUrl}}"
+                  ],
+                  "path": [
+                    "graphql"
+                  ]
                 }
               }
             },
@@ -701,61 +1491,123 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json", "type": "default" },
-                  { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" }
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
                 ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"query\": \"query($id: ID!) { appointmentHistory(id: $id) { id appointmentId patientId doctorId patientName doctorName dateTime status description eventType receivedAt } }\",\n  \"variables\": { \"id\": \"{{historyId}}\" }\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{historyUrl}}/graphql",
-                  "host": [ "{{historyUrl}}" ],
-                  "path": [ "graphql" ]
+                  "host": [
+                    "{{historyUrl}}"
+                  ],
+                  "path": [
+                    "graphql"
+                  ]
                 }
               }
             },
             {
               "name": "upcomingAppointments ✅ 200",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', () => pm.expect(pm.response.code).to.equal(200));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "POST",
                 "header": [
-                  { "key": "Content-Type", "value": "application/json", "type": "default" },
-                  { "key": "Authorization", "value": "Bearer {{token}}", "type": "default" }
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "default"
+                  }
                 ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"query\": \"query($patientId: ID!) { upcomingAppointments(patientId: $patientId) { id appointmentId patientId doctorId dateTime status description eventType receivedAt } }\",\n  \"variables\": { \"patientId\": \"{{patientId}}\" }\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{historyUrl}}/graphql",
-                  "host": [ "{{historyUrl}}" ],
-                  "path": [ "graphql" ]
+                  "host": [
+                    "{{historyUrl}}"
+                  ],
+                  "path": [
+                    "graphql"
+                  ]
                 }
               }
             },
             {
               "name": "GraphQL sem token ❌ 401",
               "event": [
-                { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));" ] } }
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('nao autenticado (401)', () => pm.expect(pm.response.code).to.equal(401));"
+                    ]
+                  }
+                }
               ],
               "request": {
                 "method": "POST",
-                "header": [ { "key": "Content-Type", "value": "application/json", "type": "default" } ],
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "default"
+                  }
+                ],
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"query\": \"query { allAppointmentHistories { id } }\"\n}",
-                  "options": { "raw": { "language": "json" } }
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{historyUrl}}/graphql",
-                  "host": [ "{{historyUrl}}" ],
-                  "path": [ "graphql" ]
+                  "host": [
+                    "{{historyUrl}}"
+                  ],
+                  "path": [
+                    "graphql"
+                  ]
                 }
               }
             }
@@ -765,22 +1617,102 @@
     }
   ],
   "variable": [
-    { "key": "localScheduling", "value": "http://localhost:8081", "type": "default" },
-    { "key": "localNotification", "value": "http://localhost:8082", "type": "default" },
-    { "key": "localHistory", "value": "http://localhost:8083", "type": "default" },
-    { "key": "baseUrl", "value": "http://localhost:8081", "type": "default" },
-    { "key": "notificationUrl", "value": "http://localhost:8082", "type": "default" },
-    { "key": "historyUrl", "value": "http://localhost:8083", "type": "default" },
-    { "key": "token", "value": "", "type": "default" },
-    { "key": "patientToken", "value": "", "type": "default" },
-    { "key": "doctorId", "value": "", "type": "default" },
-    { "key": "patientId", "value": "", "type": "default" },
-    { "key": "appointmentId", "value": "", "type": "default" },
-    { "key": "historyId", "value": "", "type": "default" },
-    { "key": "appointmentDateTime", "value": "", "type": "default" },
-    { "key": "doctorEmail", "value": "", "type": "default" },
-    { "key": "doctorPassword", "value": "", "type": "default" },
-    { "key": "patientEmail", "value": "", "type": "default" },
-    { "key": "patientPassword", "value": "", "type": "default" }
+    {
+      "key": "localScheduling",
+      "value": "http://localhost:8081",
+      "type": "default"
+    },
+    {
+      "key": "localNotification",
+      "value": "http://localhost:8082",
+      "type": "default"
+    },
+    {
+      "key": "localHistory",
+      "value": "http://localhost:8083",
+      "type": "default"
+    },
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081",
+      "type": "default"
+    },
+    {
+      "key": "notificationUrl",
+      "value": "http://localhost:8082",
+      "type": "default"
+    },
+    {
+      "key": "historyUrl",
+      "value": "http://localhost:8083",
+      "type": "default"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "patientToken",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "doctorId",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "patientId",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "appointmentId",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "historyId",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "appointmentDateTime",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "doctorEmail",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "doctorPassword",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "patientEmail",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "patientPassword",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "statusFlowId",
+      "value": ""
+    },
+    {
+      "key": "statusErrId",
+      "value": ""
+    },
+    {
+      "key": "statusFlowDateTime",
+      "value": ""
+    }
   ]
 }
