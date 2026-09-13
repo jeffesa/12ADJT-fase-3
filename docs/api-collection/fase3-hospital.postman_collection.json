@@ -86,7 +86,7 @@
                     "type": "text/javascript",
                     "exec": [
                       "const ts = Date.now();",
-                      "pm.collectionVariables.set('doctorEmail', 'doctor_' + ts + '@fiap.com');",
+                      "pm.collectionVariables.set('doctorEmail', 'doctor_' + ts + '@fiap.com.br');",
                       "pm.collectionVariables.set('doctorPassword', 'senha123');"
                     ]
                   }
@@ -147,7 +147,7 @@
                     "type": "text/javascript",
                     "exec": [
                       "const ts = Date.now();",
-                      "pm.collectionVariables.set('patientEmail', 'patient_' + ts + '@fiap.com');",
+                      "pm.collectionVariables.set('patientEmail', 'patient_' + ts + '@fiap.com.br');",
                       "pm.collectionVariables.set('patientPassword', 'senha123');"
                     ]
                   }
@@ -407,7 +407,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Fulano\",\n  \"email\": \"roleinvalida@fiap.com\",\n  \"password\": \"senha123\",\n  \"role\": \"ADMIN\"\n}",
+                  "raw": "{\n  \"name\": \"Fulano\",\n  \"email\": \"roleinvalida@fiap.com.br\",\n  \"password\": \"senha123\",\n  \"role\": \"ADMIN\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
