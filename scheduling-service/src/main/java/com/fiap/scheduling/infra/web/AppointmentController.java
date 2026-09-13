@@ -1,6 +1,8 @@
 package com.fiap.scheduling.infra.web;
 
 import com.fiap.scheduling.application.usecase.CancelAppointmentUseCase;
+import com.fiap.scheduling.application.usecase.CompleteAppointmentUseCase;
+import com.fiap.scheduling.application.usecase.ConfirmAppointmentUseCase;
 import com.fiap.scheduling.application.usecase.CreateAppointmentUseCase;
 import com.fiap.scheduling.application.usecase.FindAllAppointmentsUseCase;
 import com.fiap.scheduling.application.usecase.FindAppointmentByIdUseCase;
@@ -49,6 +51,8 @@ public class AppointmentController {
     private final CreateAppointmentUseCase createAppointmentUseCase;
     private final UpdateAppointmentUseCase updateAppointmentUseCase;
     private final CancelAppointmentUseCase cancelAppointmentUseCase;
+    private final ConfirmAppointmentUseCase confirmAppointmentUseCase;
+    private final CompleteAppointmentUseCase completeAppointmentUseCase;
     private final FindAppointmentByIdUseCase findAppointmentByIdUseCase;
     private final FindAppointmentsByPatientUseCase findAppointmentsByPatientUseCase;
     private final FindAppointmentsByDoctorUseCase findAppointmentsByDoctorUseCase;
@@ -58,6 +62,8 @@ public class AppointmentController {
     public AppointmentController(CreateAppointmentUseCase createAppointmentUseCase,
                                  UpdateAppointmentUseCase updateAppointmentUseCase,
                                  CancelAppointmentUseCase cancelAppointmentUseCase,
+                                 ConfirmAppointmentUseCase confirmAppointmentUseCase,
+                                 CompleteAppointmentUseCase completeAppointmentUseCase,
                                  FindAppointmentByIdUseCase findAppointmentByIdUseCase,
                                  FindAppointmentsByPatientUseCase findAppointmentsByPatientUseCase,
                                  FindAppointmentsByDoctorUseCase findAppointmentsByDoctorUseCase,
@@ -66,6 +72,8 @@ public class AppointmentController {
         this.createAppointmentUseCase = createAppointmentUseCase;
         this.updateAppointmentUseCase = updateAppointmentUseCase;
         this.cancelAppointmentUseCase = cancelAppointmentUseCase;
+        this.confirmAppointmentUseCase = confirmAppointmentUseCase;
+        this.completeAppointmentUseCase = completeAppointmentUseCase;
         this.findAppointmentByIdUseCase = findAppointmentByIdUseCase;
         this.findAppointmentsByPatientUseCase = findAppointmentsByPatientUseCase;
         this.findAppointmentsByDoctorUseCase = findAppointmentsByDoctorUseCase;
@@ -131,6 +139,44 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponse> cancel(@PathVariable UUID id) {
         AuthenticatedUser user = currentUser();
         Appointment appointment = cancelAppointmentUseCase.execute(
+                id,
+                user.userId(),
+                toUserRole(user.role())
+        );
+        return ResponseEntity.ok(AppointmentResponse.fromDomain(appointment));
+    }
+
+    @Operation(summary = "Confirmar consulta",
+            description = "Confirma uma consulta (SCHEDULED -> CONFIRMED). Apenas DOCTOR e NURSE.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Consulta confirmada"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão"),
+            @ApiResponse(responseCode = "404", description = "Consulta não encontrada"),
+            @ApiResponse(responseCode = "422", description = "Regra de negócio violada")
+    })
+    @PatchMapping("/{id}/confirm")
+    public ResponseEntity<AppointmentResponse> confirm(@PathVariable UUID id) {
+        AuthenticatedUser user = currentUser();
+        Appointment appointment = confirmAppointmentUseCase.execute(
+                id,
+                user.userId(),
+                toUserRole(user.role())
+        );
+        return ResponseEntity.ok(AppointmentResponse.fromDomain(appointment));
+    }
+
+    @Operation(summary = "Concluir consulta",
+            description = "Marca uma consulta como realizada (CONFIRMED -> COMPLETED). Apenas DOCTOR e NURSE.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Consulta concluída"),
+            @ApiResponse(responseCode = "403", description = "Sem permissão"),
+            @ApiResponse(responseCode = "404", description = "Consulta não encontrada"),
+            @ApiResponse(responseCode = "422", description = "Regra de negócio violada")
+    })
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<AppointmentResponse> complete(@PathVariable UUID id) {
+        AuthenticatedUser user = currentUser();
+        Appointment appointment = completeAppointmentUseCase.execute(
                 id,
                 user.userId(),
                 toUserRole(user.role())

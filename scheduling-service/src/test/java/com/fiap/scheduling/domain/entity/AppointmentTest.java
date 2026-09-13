@@ -1,5 +1,6 @@
 package com.fiap.scheduling.domain.entity;
 
+import com.fiap.scheduling.domain.shared.BusinessException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +55,7 @@ class AppointmentTest {
     @DisplayName("complete direto de SCHEDULED deve falhar")
     void completeFromScheduledFails() {
         Appointment a = Appointment.create(patientId, doctorId, LocalDateTime.now().plusDays(1), "C");
-        assertThrows(IllegalArgumentException.class, a::complete);
+        assertThrows(BusinessException.class, a::complete);
     }
 
     @Test
@@ -70,7 +71,7 @@ class AppointmentTest {
     void cannotChangeCancelled() {
         Appointment a = Appointment.create(patientId, doctorId, LocalDateTime.now().plusDays(1), "C");
         a.cancel();
-        assertThrows(IllegalArgumentException.class, a::confirm);
+        assertThrows(BusinessException.class, a::confirm);
     }
 
     @Test
@@ -79,7 +80,7 @@ class AppointmentTest {
         Appointment a = Appointment.create(patientId, doctorId, LocalDateTime.now().plusDays(1), "C");
         a.confirm();
         a.complete();
-        assertThrows(IllegalArgumentException.class, a::cancel);
+        assertThrows(BusinessException.class, a::cancel);
     }
 
     @Test
@@ -107,7 +108,7 @@ class AppointmentTest {
     void updateCancelledFails() {
         Appointment a = Appointment.create(patientId, doctorId, LocalDateTime.now().plusDays(1), "C");
         a.cancel();
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(BusinessException.class,
                 () -> a.update(LocalDateTime.now().plusDays(2), "x"));
     }
 }

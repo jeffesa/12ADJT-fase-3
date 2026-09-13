@@ -1,5 +1,7 @@
 package com.fiap.scheduling.domain.entity;
 
+import com.fiap.scheduling.domain.shared.BusinessException;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -70,22 +72,22 @@ public class Appointment {
 
     public void validateStatusTransition(AppointmentStatus newStatus) {
         if (this.status == AppointmentStatus.CANCELLED) {
-            throw new IllegalArgumentException("Consulta cancelada não pode ser alterada");
+            throw new BusinessException("Consulta cancelada não pode ser alterada");
         }
         if (this.status == AppointmentStatus.COMPLETED) {
-            throw new IllegalArgumentException("Consulta finalizada não pode ser alterada");
+            throw new BusinessException("Consulta finalizada não pode ser alterada");
         }
 
         switch (newStatus) {
             case CONFIRMED:
                 if (this.status != AppointmentStatus.SCHEDULED) {
-                    throw new IllegalArgumentException(
+                    throw new BusinessException(
                             "Só é possível confirmar uma consulta com status SCHEDULED");
                 }
                 break;
             case COMPLETED:
                 if (this.status != AppointmentStatus.CONFIRMED) {
-                    throw new IllegalArgumentException(
+                    throw new BusinessException(
                             "Só é possível completar uma consulta com status CONFIRMED");
                 }
                 break;
@@ -93,9 +95,9 @@ public class Appointment {
                 // Pode cancelar de SCHEDULED ou CONFIRMED
                 break;
             case SCHEDULED:
-                throw new IllegalArgumentException("Não é possível voltar ao status SCHEDULED");
+                throw new BusinessException("Não é possível voltar ao status SCHEDULED");
             default:
-                throw new IllegalArgumentException("Status inválido: " + newStatus);
+                throw new BusinessException("Status inválido: " + newStatus);
         }
     }
 
@@ -123,7 +125,7 @@ public class Appointment {
 
     public void update(LocalDateTime newDateTime, String newDescription) {
         if (this.status == AppointmentStatus.CANCELLED || this.status == AppointmentStatus.COMPLETED) {
-            throw new IllegalArgumentException("Consulta cancelada ou finalizada não pode ser editada");
+            throw new BusinessException("Consulta cancelada ou finalizada não pode ser editada");
         }
         if (newDateTime != null) {
             this.dateTime = newDateTime;

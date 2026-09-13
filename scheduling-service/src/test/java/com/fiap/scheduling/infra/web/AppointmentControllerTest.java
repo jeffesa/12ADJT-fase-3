@@ -2,6 +2,8 @@ package com.fiap.scheduling.infra.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiap.scheduling.application.usecase.CancelAppointmentUseCase;
+import com.fiap.scheduling.application.usecase.CompleteAppointmentUseCase;
+import com.fiap.scheduling.application.usecase.ConfirmAppointmentUseCase;
 import com.fiap.scheduling.application.usecase.CreateAppointmentUseCase;
 import com.fiap.scheduling.application.usecase.FindAllAppointmentsUseCase;
 import com.fiap.scheduling.application.usecase.FindAppointmentByIdUseCase;
@@ -56,6 +58,8 @@ class AppointmentControllerTest {
     @MockBean private CreateAppointmentUseCase createAppointmentUseCase;
     @MockBean private UpdateAppointmentUseCase updateAppointmentUseCase;
     @MockBean private CancelAppointmentUseCase cancelAppointmentUseCase;
+    @MockBean private ConfirmAppointmentUseCase confirmAppointmentUseCase;
+    @MockBean private CompleteAppointmentUseCase completeAppointmentUseCase;
     @MockBean private FindAppointmentByIdUseCase findAppointmentByIdUseCase;
     @MockBean private FindAppointmentsByPatientUseCase findAppointmentsByPatientUseCase;
     @MockBean private FindAppointmentsByDoctorUseCase findAppointmentsByDoctorUseCase;

@@ -1,6 +1,8 @@
 package com.fiap.scheduling.infra.config;
 
 import com.fiap.scheduling.application.usecase.CancelAppointmentUseCase;
+import com.fiap.scheduling.application.usecase.CompleteAppointmentUseCase;
+import com.fiap.scheduling.application.usecase.ConfirmAppointmentUseCase;
 import com.fiap.scheduling.application.usecase.CreateAppointmentUseCase;
 import com.fiap.scheduling.application.usecase.FindAllUsersUseCase;
 import com.fiap.scheduling.application.usecase.FindAllAppointmentsUseCase;
@@ -87,6 +89,18 @@ public class UseCaseConfig {
     @Bean
     public CancelAppointmentUseCase cancelAppointmentUseCase(AppointmentGateway appointmentGateway) {
         return new CancelAppointmentUseCase(appointmentGateway);
+    }
+
+    @Bean
+    public ConfirmAppointmentUseCase confirmAppointmentUseCase(AppointmentGateway appointmentGateway,
+                                                              EventPublisher eventPublisher) {
+        return new ConfirmAppointmentUseCase(appointmentGateway, eventPublisher);
+    }
+
+    @Bean
+    public CompleteAppointmentUseCase completeAppointmentUseCase(AppointmentGateway appointmentGateway,
+                                                                EventPublisher eventPublisher) {
+        return new CompleteAppointmentUseCase(appointmentGateway, eventPublisher);
     }
 
     @Bean
