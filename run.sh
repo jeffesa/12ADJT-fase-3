@@ -19,10 +19,10 @@ C_RED='\033[0;31m'
 C_YELLOW='\033[1;33m'
 C_RESET='\033[0m'
 
-info()  { echo -e "${C_CYAN}$1${C_RESET}"; }
-ok()    { echo -e "${C_GREEN}$1${C_RESET}"; }
-warn()  { echo -e "${C_YELLOW}$1${C_RESET}"; }
-err()   { echo -e "${C_RED}$1${C_RESET}"; }
+info()  { printf "${C_CYAN}%b${C_RESET}\n" "$1"; }
+ok()    { printf "${C_GREEN}%b${C_RESET}\n" "$1"; }
+warn()  { printf "${C_YELLOW}%b${C_RESET}\n" "$1"; }
+err()   { printf "${C_RED}%b${C_RESET}\n" "$1"; }
 
 # ─── Validação de pré-requisitos ───────────────────────────────
 
@@ -196,9 +196,9 @@ run_newman() {
 
 show_menu() {
   echo ""
-  echo -e "${C_CYAN}╔════════════════════════════════════════════════════╗${C_RESET}"
-  echo -e "${C_CYAN}║   Tech Challenge Fase 3 — Sistema Hospitalar        ║${C_RESET}"
-  echo -e "${C_CYAN}╚════════════════════════════════════════════════════╝${C_RESET}"
+  printf "${C_CYAN}╔════════════════════════════════════════════════════╗${C_RESET}\n"
+  printf "${C_CYAN}║   Tech Challenge Fase 3 — Sistema Hospitalar        ║${C_RESET}\n"
+  printf "${C_CYAN}╚════════════════════════════════════════════════════╝${C_RESET}\n"
   echo "  1) Subir tudo (Docker Compose up --build)"
   echo "  2) Parar containers (Docker Compose down)"
   echo "  3) Rodar testes (mvn clean verify)"
