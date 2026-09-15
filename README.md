@@ -24,6 +24,7 @@ Sistema hospitalar baseado em microsserviços para agendamento de consultas méd
 - [GraphQL (history-service)](#graphql-history-service)
 - [Mensageria (RabbitMQ)](#mensageria-rabbitmq)
 - [Como rodar os testes](#como-rodar-os-testes)
+- [Collection de API (Postman / Bruno / Newman)](#collection-de-api-postman--bruno--newman)
 - [Status de implementação](#status-de-implementação)
 
 ---
@@ -356,6 +357,67 @@ Os testes usam H2 em memória e não dependem de RabbitMQ/PostgreSQL (o profile 
 
 ---
 
+## Collection de API (Postman / Bruno / Newman)
+
+Collection única para testar os três microsserviços, em `docs/api-collection/fase3-hospital.postman_collection.json`. Compatível com **Postman**, **Bruno** e **Newman** (schema Postman Collection v2.1.0). As variáveis (URLs dos três serviços, token JWT, IDs) ficam embutidas na própria collection (`collectionVariables`) — não há arquivo de environment separado.
+
+### Serviços cobertos
+
+| Serviço | Porta | Tipo | Pastas na collection |
+|---|---|---|---|
+| scheduling-service | 8081 | REST (Auth JWT + CRUD de consultas + usuários) | `Auth`, `Scheduling`, `Users` |
+| notification-service | 8082 | REST (consulta de notificações) | `Notification` |
+| history-service | 8083 | GraphQL (histórico de consultas) | `History` |
+
+As pastas ficam dentro de `local` (ambiente Docker Compose).
+
+### Como importar no Bruno
+
+1. Bruno > **Import Collection** > escolha **Postman Collection** e selecione `fase3-hospital.postman_collection.json`.
+2. Abra a pasta `local` e rode **"Selecionar ambiente local"** primeiro (aponta as variáveis para `localhost:8081/8082/8083` e limpa o token).
+3. Rode a pasta `Auth` (o **Register DOCTOR** e o **Login DOCTOR** salvam o token; **Register PATIENT** salva o `patientId`).
+4. Rode `Scheduling`, `Users`, `Notification`, `History`.
+
+> O auto-login (script de pré-request no nível da collection) faz login automaticamente se o token estiver vazio e já houver credenciais de DOCTOR salvas, então requests isolados também funcionam.
+
+### Como usar no Postman
+
+Import > selecione o arquivo. Rode `local > Selecionar ambiente local` e depois as pastas na ordem `Auth → Scheduling → Users → Notification → History`.
+
+### Como rodar com Newman (CLI)
+
+```bash
+# ambiente local inteiro
+npx newman run docs/api-collection/fase3-hospital.postman_collection.json --folder local
+
+# ou via script runner
+./run.sh newman
+```
+
+> Os serviços precisam estar no ar (`./run.sh docker`) antes de rodar a collection.
+
+### Variáveis (embutidas na collection)
+
+| Variável | Descrição |
+|---|---|
+| `localScheduling` / `localNotification` / `localHistory` | URLs locais (8081 / 8082 / 8083) |
+| `baseUrl` / `notificationUrl` / `historyUrl` | URLs ativas, definidas pelo request "Selecionar ambiente local" |
+| `token` | JWT do DOCTOR (usado nos requests autenticados) |
+| `patientToken` / `nurseToken` | JWT de PATIENT e NURSE (cenários de ownership e role) |
+| `doctorId` / `patientId` / `nurseId` | IDs dos usuários registrados |
+| `appointmentId` | ID da consulta criada |
+| `appointmentDateTime` | data/hora futura gerada no pré-request |
+
+### Cenários
+
+**Sucesso:** registro (DOCTOR, PATIENT, NURSE) e login; criar, buscar, atualizar, listar e cancelar consulta; confirmar e concluir (ciclo de status); listar por paciente e por médico; consultas futuras; listar usuários (com filtros de role); listar notificações (com e sem filtro por tipo); queries GraphQL (`appointmentsByPatient`, `appointmentsByDoctor`, `allAppointmentHistories`, `appointmentHistory` por id, `upcomingAppointments`).
+
+**Erro:** login com senha inválida (422); registro com email duplicado (422), body inválido (400) ou role inválida (400); criar consulta sem token (401); listar com token inválido (401); buscar consulta inexistente (404); transição de estado inválida (422); acesso sem permissão por role/ownership (403); notificação com tipo inválido (422) e sem token (401); GraphQL sem token (401).
+
+> `notification-service` e `history-service` são populados de forma assíncrona pelos eventos RabbitMQ publicados pelo scheduling ao criar/atualizar consultas.
+
+---
+
 ## Status de implementação
 
 Status atual por serviço:
@@ -366,4 +428,4 @@ Status atual por serviço:
 | **notification-service** | Consumer de eventos, persistência e API REST de notificações, retry + DLQ — implementados |
 | **history-service** | Consumer de eventos, persistência em PostgreSQL, resolvers GraphQL e controle de acesso por role — implementados |
 
-Consulte o backlog completo em [`docs/planejamento/BACKLOG.md`](docs/planejamento/BACKLOG.md) e o quadro de tarefas em [GitHub Projects](https://github.com/users/jeffesa/projects/9).
+Quadro de tarefas em [GitHub Projects](https://github.com/users/jeffesa/projects/9).

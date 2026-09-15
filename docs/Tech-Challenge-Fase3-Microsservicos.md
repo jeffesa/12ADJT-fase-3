@@ -290,41 +290,66 @@ Endpoint: `POST /graphql` — UI de testes em `GET /graphiql`.
 
 ## COLLECTION DE API (chamadas dos microsserviços)
 
-O repositório inclui uma collection única que **demonstra e testa as chamadas de todos os microsserviços** da aplicação, em `docs/api-collection/fase3-hospital.postman_collection.json`. É compatível com **Postman**, **Bruno** e **Newman** (schema Postman Collection v2.1.0) e traz as variáveis (URLs dos três serviços, token JWT, IDs) embutidas na própria collection — não há arquivo de environment separado.
+O repositório inclui uma collection única que **demonstra e testa as chamadas de todos os microsserviços** da aplicação, em `docs/api-collection/fase3-hospital.postman_collection.json`. É compatível com **Postman**, **Bruno** e **Newman** (schema Postman Collection v2.1.0). As variáveis (URLs dos três serviços, token JWT, IDs) ficam embutidas na própria collection (`collectionVariables`) — não há arquivo de environment separado.
 
-### Organização (por microsserviço)
+### Serviços cobertos
 
-As chamadas ficam na pasta `local` (ambiente Docker Compose), agrupadas por serviço/domínio:
+| Serviço | Porta | Tipo | Pastas na collection |
+|---|---|---|---|
+| scheduling-service | 8081 | REST (Auth JWT + CRUD de consultas + usuários) | `Auth`, `Scheduling`, `Users` |
+| notification-service | 8082 | REST (consulta de notificações) | `Notification` |
+| history-service | 8083 | GraphQL (histórico de consultas) | `History` |
 
-| Pasta | Serviço | O que cobre |
-|---|---|---|
-| **Auth** | scheduling-service (8081) | Registro (DOCTOR, PATIENT, NURSE) e login; casos de erro (credenciais inválidas, email duplicado, body/role inválidos) |
-| **Scheduling** | scheduling-service (8081) | CRUD de consultas, ciclo de status (confirmar/concluir/cancelar), filtros por status e casos de erro (401/403/404/422) |
-| **Users** | scheduling-service (8081) | Listagem de usuários com filtros por role e busca por ID; casos de erro (400/403/404) |
-| **Notification** | notification-service (8082) | Consulta das notificações geradas pelos eventos, com filtro por tipo; caso de erro (tipo inválido, sem token) |
-| **History** | history-service (8083) | Queries GraphQL do histórico (por paciente, por médico, futuras, por ID, todas); caso de erro sem token |
-
-Cada requisição possui **scripts de teste** (assertions) que validam o status HTTP e o corpo da resposta, cobrindo tanto cenários de sucesso quanto de erro.
+As pastas ficam dentro de `local` (ambiente Docker Compose). Cada requisição possui scripts de teste (assertions) que validam o status HTTP e o corpo da resposta, cobrindo cenários de sucesso e de erro.
 
 ### Fluxo entre os serviços demonstrado pela collection
 
-A collection evidencia a comunicação assíncrona entre os microsserviços: ao criar/editar uma consulta na pasta **Scheduling** (scheduling-service), o evento é publicado no RabbitMQ e consumido pelos outros dois serviços — o que pode ser conferido em seguida nas pastas **Notification** (notificação gerada) e **History** (registro persistido, consultável via GraphQL). Assim, o mesmo `appointmentId` criado no scheduling aparece nas notificações e no histórico.
+A collection evidencia a comunicação assíncrona entre os microsserviços: ao criar/editar uma consulta na pasta **Scheduling** (scheduling-service), o evento é publicado no RabbitMQ e consumido pelos outros dois serviços — conferível em seguida nas pastas **Notification** (notificação gerada) e **History** (registro persistido, consultável via GraphQL). O mesmo `appointmentId` criado no scheduling aparece nas notificações e no histórico.
 
-### Como executar
+### Como importar no Bruno
 
-**Bruno / Postman:** importe o arquivo, abra a pasta `local`, rode primeiro **"Selecionar ambiente local"** (aponta as variáveis para `localhost:8081/8082/8083`) e depois as pastas na ordem `Auth → Scheduling → Users → Notification → History`. O registro/login salva o token automaticamente (há também auto-login no pré-request da collection).
+1. Bruno > **Import Collection** > escolha **Postman Collection** e selecione `fase3-hospital.postman_collection.json`.
+2. Abra a pasta `local` e rode **"Selecionar ambiente local"** primeiro (aponta as variáveis para `localhost:8081/8082/8083` e limpa o token).
+3. Rode a pasta `Auth` (o **Register DOCTOR** e o **Login DOCTOR** salvam o token; **Register PATIENT** salva o `patientId`).
+4. Rode `Scheduling`, `Users`, `Notification`, `History`.
 
-**Newman (linha de comando):**
+O auto-login (script de pré-request no nível da collection) faz login automaticamente se o token estiver vazio e já houver credenciais de DOCTOR salvas, então requests isolados também funcionam.
+
+### Como usar no Postman
+
+Import > selecione o arquivo. Rode `local > Selecionar ambiente local` e depois as pastas na ordem `Auth → Scheduling → Users → Notification → History`.
+
+### Como rodar com Newman (CLI)
 
 ```bash
-# via script
-./run.sh newman
-
-# ou diretamente
+# ambiente local inteiro
 npx newman run docs/api-collection/fase3-hospital.postman_collection.json --folder local
+
+# ou via script runner
+./run.sh newman
 ```
 
-> Os serviços precisam estar no ar (`./run.sh docker`) antes de rodar a collection. Detalhes de importação e variáveis em `docs/api-collection/README.md`.
+Os serviços precisam estar no ar (`./run.sh docker`) antes de rodar a collection.
+
+### Variáveis (embutidas na collection)
+
+| Variável | Descrição |
+|---|---|
+| `localScheduling` / `localNotification` / `localHistory` | URLs locais (8081 / 8082 / 8083) |
+| `baseUrl` / `notificationUrl` / `historyUrl` | URLs ativas, definidas pelo request "Selecionar ambiente local" |
+| `token` | JWT do DOCTOR (usado nos requests autenticados) |
+| `patientToken` / `nurseToken` | JWT de PATIENT e NURSE (cenários de ownership e role) |
+| `doctorId` / `patientId` / `nurseId` | IDs dos usuários registrados |
+| `appointmentId` | ID da consulta criada |
+| `appointmentDateTime` | data/hora futura gerada no pré-request |
+
+### Cenários
+
+**Sucesso:** registro (DOCTOR, PATIENT, NURSE) e login; criar, buscar, atualizar, listar e cancelar consulta; confirmar e concluir (ciclo de status); listar por paciente e por médico; consultas futuras; listar usuários (com filtros de role); listar notificações (com e sem filtro por tipo); queries GraphQL (`appointmentsByPatient`, `appointmentsByDoctor`, `allAppointmentHistories`, `appointmentHistory` por id, `upcomingAppointments`).
+
+**Erro:** login com senha inválida (422); registro com email duplicado (422), body inválido (400) ou role inválida (400); criar consulta sem token (401); listar com token inválido (401); buscar consulta inexistente (404); transição de estado inválida (422); acesso sem permissão por role/ownership (403); notificação com tipo inválido (422) e sem token (401); GraphQL sem token (401).
+
+> `notification-service` e `history-service` são populados de forma assíncrona pelos eventos RabbitMQ publicados pelo scheduling ao criar/atualizar consultas.
 
 ---
 
