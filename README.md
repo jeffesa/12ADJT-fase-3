@@ -428,4 +428,4 @@ Status atual por serviço:
 | **notification-service** | Consumer de eventos, persistência e API REST de notificações, retry + DLQ — implementados |
 | **history-service** | Consumer de eventos, persistência em PostgreSQL, resolvers GraphQL e controle de acesso por role — implementados |
 
-Consulte o backlog completo em [`docs/planejamento/BACKLOG.md`](docs/planejamento/BACKLOG.md) e o quadro de tarefas em [GitHub Projects](https://github.com/users/jeffesa/projects/9).
+Quadro de tarefas em [GitHub Projects](https://github.com/users/jeffesa/projects/9).
